@@ -1,4 +1,4 @@
-package com.app.mobiledeviceprogramming
+package com.haw.mobiledeviceprogramming
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

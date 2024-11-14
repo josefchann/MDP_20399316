@@ -1,4 +1,4 @@
-package com.app.mobiledeviceprogramming.presentation.screen
+package com.haw.mobiledeviceprogramming.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

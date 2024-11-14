@@ -20,11 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.haw.mobiledeviceprogramming.presentation.utils.Navigation
 import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
-import com.app.mobiledeviceprogramming.presentation.screen.MedicineScreen
 import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.app.mobiledeviceprogramming.ui.theme.PurpleGrey
 import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
@@ -82,34 +80,16 @@ fun MainScreen(modifier: Modifier = Modifier) {
                                 launchSingleTop = true
                                 restoreState = true
                             }
-
                         },
                     )
                 }
             }
         }
     ) { paddingValues ->
-        NavHost(
-            modifier = Modifier.padding(paddingValues = paddingValues),
+        Navigation(
             navController = navController,
-            startDestination = BottomNavItemScreen.Home.route
-        ) {
-            composable(route = BottomNavItemScreen.Home.route) {
-                HomeScreen()
-            }
-
-            composable(route = BottomNavItemScreen.Schedule.route) {
-                ScheduleScreen()
-            }
-
-            composable(route = BottomNavItemScreen.Medicine.route) {
-                MedicineScreen()
-            }
-
-            composable(route = BottomNavItemScreen.Profile.route) {
-
-            }
-        }
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 
