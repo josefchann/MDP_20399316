@@ -8,6 +8,7 @@ import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.HomeScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.ScheduleScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.MedicineScreen
+import com.haw.mobiledeviceprogramming.presentation.screen.ProfileScreen
 
 @Composable
 fun Navigation(
@@ -21,7 +22,7 @@ fun Navigation(
         startDestination = startDestination
     ) {
         composable(route = BottomNavItemScreen.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen()
         }
         composable(route = BottomNavItemScreen.Schedule.route) {
             ScheduleScreen()
@@ -30,7 +31,7 @@ fun Navigation(
             MedicineScreen()
         }
         composable(route = BottomNavItemScreen.Profile.route) {
-            // Profile screen can be added here
+            ProfileScreen()
         }
     }
 }

@@ -92,21 +92,21 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             )
 
             // Menu Home
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                MenuHome(icon = R.drawable.ic_covid, title = "Covid")
-                MenuHome(icon = R.drawable.ic_doctor, title = "Doctor")
-                MenuHome(
-                    icon = R.drawable.ic_medicine,
-                    title = "Medicine",
-//                    onClick = { navController.navigate("medicine") }
-                )
-                MenuHome(icon = R.drawable.ic_hospital, title = "Hospital")
-            }
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 24.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                MenuHome(icon = R.drawable.ic_covid, title = "Covid")
+//                MenuHome(icon = R.drawable.ic_doctor, title = "Doctor")
+//                MenuHome(
+//                    icon = R.drawable.ic_medicine,
+//                    title = "Medicine",
+////                    onClick = { navController.navigate("medicine") }
+//                )
+//                MenuHome(icon = R.drawable.ic_hospital, title = "Hospital")
+//            }
 
             // Near Content
             Text(
@@ -122,7 +122,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                items(3) {
+                items(5) {
                     NearDoctorCard()
                 }
             }
