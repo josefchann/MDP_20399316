@@ -1,5 +1,6 @@
 package com.haw.mobiledeviceprogramming.presentation.screen
 
+import DoctorViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,24 +35,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.app.mobiledeviceprogramming.R
+import com.haw.mobiledeviceprogramming.R
 import com.haw.mobiledeviceprogramming.presentation.components.MenuHome
 import com.haw.mobiledeviceprogramming.presentation.components.NearDoctorCard
 import com.haw.mobiledeviceprogramming.presentation.components.ScheduleTimeContent
-import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.app.mobiledeviceprogramming.ui.theme.GraySecond
-import com.app.mobiledeviceprogramming.ui.theme.PurpleGrey
-import com.app.mobiledeviceprogramming.ui.theme.WhiteBackground
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.GraySecond
+import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
+import com.haw.mobiledeviceprogramming.ui.theme.WhiteBackground
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
-import com.haw.mobiledeviceprogramming.presentation.utils.getRandomDoctor
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-
-    val navController = rememberNavController()
-//    MyAppNavHost(navController = navController)
-
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: DoctorViewModel = viewModel() // Pass the ViewModel here
+) {
     Surface(
         modifier = modifier
             .padding(top = 42.dp, start = 16.dp, end = 16.dp)
@@ -91,27 +94,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 onValueChange = {},
             )
 
-            // Menu Home
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(top = 24.dp),
-//                horizontalArrangement = Arrangement.SpaceBetween
-//            ) {
-//                MenuHome(icon = R.drawable.ic_covid, title = "Covid")
-//                MenuHome(icon = R.drawable.ic_doctor, title = "Doctor")
-//                MenuHome(
-//                    icon = R.drawable.ic_medicine,
-//                    title = "Medicine",
-////                    onClick = { navController.navigate("medicine") }
-//                )
-//                MenuHome(icon = R.drawable.ic_hospital, title = "Hospital")
-//            }
-
             // Near Content
             Text(
                 modifier = Modifier.padding(top = 32.dp),
-                text = "Near Doctor",
+                text = "Recommended Doctors",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
@@ -122,8 +108,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                items(5) {
-                    NearDoctorCard()
+                // Pass the index to each NearDoctorCard
+                items(5) { index ->
+                    NearDoctorCard(index = index, viewModel = viewModel)
                 }
             }
         }
@@ -166,71 +153,93 @@ private fun HeaderContent(modifier: Modifier = Modifier) {
 @Composable
 private fun ScheduleContent(
     modifier: Modifier = Modifier,
-    doctor: Doctor = getRandomDoctor()
+    viewModel: DoctorViewModel = viewModel() // Use ViewModel to fetch doctors
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = BluePrimary,
-        tonalElevation = 1.dp,
-        shadowElevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Image(
-                    modifier = Modifier.size(48.dp),
-                    painter = painterResource(id = doctor.imageRes),
-                    contentDescription = "Image Doctor"
-                )
+    val doctors by viewModel.doctors.collectAsState() // Observe the doctor list
 
-                Column(
-                    modifier = Modifier
-                        .padding(start = 12.dp)
-                        .weight(1f)
+    // Trigger fetching of doctors
+    LaunchedEffect(Unit) {
+        viewModel.fetchDoctors()
+    }
+
+    // Get a random doctor or show loading state
+    val doctor = if (doctors.isNotEmpty()) doctors.random() else null
+
+    if (doctor != null) {
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            color = BluePrimary,
+            tonalElevation = 1.dp,
+            shadowElevation = 2.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = doctor.name,
-                        fontFamily = poppinsFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                    Image(
+                        modifier = Modifier.size(48.dp),
+                        painter = painterResource(id = doctor.imageRes),
+                        contentDescription = "Image Doctor"
                     )
 
-                    Text(
-                        text = doctor.specialty,
-                        fontFamily = poppinsFontFamily,
-                        fontWeight = FontWeight.Light,
-                        color = GraySecond
+                    Column(
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .weight(1f)
+                    ) {
+                        Text(
+                            text = doctor.name,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+
+                        Text(
+                            text = doctor.specialty,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light,
+                            color = GraySecond
+                        )
+                    }
+
+                    Image(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "Arrow Next",
+                        colorFilter = ColorFilter.tint(color = Color.White)
                     )
                 }
 
-                Image(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "Arrow Next",
-                    colorFilter = ColorFilter.tint(color = Color.White)
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                        .height(1.dp)
+                        .alpha(0.2f),
+                    color = Color.White
                 )
+
+                // Schedule Time Content
+                ScheduleTimeContent()
             }
-
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-                    .height(1.dp)
-                    .alpha(0.2f),
-                color = Color.White
-            )
-
-            // Schedule Time Content
-            ScheduleTimeContent()
         }
+    } else {
+        // Loading placeholder
+        Text(
+            text = "Loading...",
+            modifier = Modifier.fillMaxWidth(),
+            color = Color.White,
+            fontFamily = poppinsFontFamily,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

@@ -23,9 +23,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.haw.mobiledeviceprogramming.presentation.utils.Navigation
 import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
-import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.app.mobiledeviceprogramming.ui.theme.PurpleGrey
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -93,8 +93,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview
-@Composable
-private fun MainScreenPreview() {
-    MainScreen()
-}
+//@Preview
+//@Composable
+//private fun MainScreenPreview() {
+//    MainScreen()
+//}

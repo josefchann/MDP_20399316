@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.app.mobiledeviceprogramming"
-    compileSdk = 34
+    namespace = "com.haw.mobiledeviceprogramming"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.app.mobiledeviceprogramming"
+        applicationId = "com.haw.mobiledeviceprogramming"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -52,6 +52,13 @@ android {
 
 dependencies {
 
+    implementation(libs.firebase.firestore.ktx)
+    val credentialsManagerVersion = "1.5.0-alpha05"
+    implementation("androidx.credentials:credentials:$credentialsManagerVersion")
+    implementation("androidx.credentials:credentials-play-services-auth:$credentialsManagerVersion")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,7 +68,11 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
+    implementation(platform(libs.firebase.bom.v3330))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

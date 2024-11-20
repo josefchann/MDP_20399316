@@ -19,8 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.mobiledeviceprogramming.R
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.R
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleDate
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleTime
 

@@ -1,4 +1,4 @@
-package com.app.mobiledeviceprogramming
+package com.haw.mobiledeviceprogramming
 
 import org.junit.Test
 

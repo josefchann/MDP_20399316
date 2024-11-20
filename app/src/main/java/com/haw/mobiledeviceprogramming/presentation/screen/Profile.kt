@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.haw.mobiledeviceprogramming.presentation.components.ProfileInfoCard
 import com.haw.mobiledeviceprogramming.presentation.components.SettingsCard
-import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier) {

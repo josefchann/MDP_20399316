@@ -1,6 +1,6 @@
 package com.haw.mobiledeviceprogramming.navigation.screen
 
-import com.app.mobiledeviceprogramming.R
+import com.haw.mobiledeviceprogramming.R
 
 sealed class BottomNavItemScreen(val route: String, val icon: Int, val title: String) {
 

@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 
 @Composable
 fun ProfileInfoCard(modifier: Modifier = Modifier) {

@@ -20,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.haw.mobiledeviceprogramming.presentation.components.MedicineCard
-import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 
 @Composable
 fun MedicineScreen(modifier: Modifier = Modifier) {

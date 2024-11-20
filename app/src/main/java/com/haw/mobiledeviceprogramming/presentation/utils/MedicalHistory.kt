@@ -1,6 +1,6 @@
 package com.haw.mobiledeviceprogramming.presentation.utils
 
-import com.app.mobiledeviceprogramming.R
+import com.haw.mobiledeviceprogramming.R
 
 data class MedicalHistory(
     val desc: String,

@@ -21,11 +21,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.app.mobiledeviceprogramming.R
-import com.app.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.app.mobiledeviceprogramming.ui.theme.PurpleGrey
-import com.app.mobiledeviceprogramming.ui.theme.TextColorTitle
-import com.app.mobiledeviceprogramming.ui.theme.poppinsFontFamily
+import com.haw.mobiledeviceprogramming.R
+import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
+import com.haw.mobiledeviceprogramming.ui.theme.TextColorTitle
+import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.Medicine
 import com.haw.mobiledeviceprogramming.presentation.utils.getMedicine
 
