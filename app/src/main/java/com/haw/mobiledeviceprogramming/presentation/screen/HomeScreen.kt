@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -24,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,9 +51,15 @@ import com.haw.mobiledeviceprogramming.ui.theme.WhiteBackground
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: DoctorViewModel = viewModel() // Pass the ViewModel here
 ) {
@@ -65,54 +76,32 @@ fun HomeScreen(
             // Schedule Content
             ScheduleContent()
 
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                value = "",
-                placeholder = {
-                    Text(
-                        text = "Search doctor or health issue",
-                        fontFamily = poppinsFontFamily,
-                        fontWeight = FontWeight.W400,
-                        color = PurpleGrey
-                    )
-                },
-                leadingIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = "Icon Search"
-                    )
-                },
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = WhiteBackground,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(12.dp),
-                onValueChange = {},
-            )
+            //Search Bar
+            SearchableDoctorList(navController = navController, viewModel = viewModel)
+        }
+    }
+}
 
-            // Near Content
-            Text(
-                modifier = Modifier.padding(top = 32.dp),
-                text = "Recommended Doctors",
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+@Composable
+fun HomeScreenWithNavigation() {
+    val navController = rememberNavController()
 
-            LazyColumn(
-                modifier = Modifier.padding(top = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                // Pass the index to each NearDoctorCard
-                items(5) { index ->
-                    NearDoctorCard(index = index, viewModel = viewModel)
-                }
-            }
+    NavHost(
+        navController = navController,
+        startDestination = "doctor_list"
+    ) {
+        // List Screen
+        composable("doctor_list") {
+            HomeScreen(navController = navController) // Pass navController here
+        }
+
+        // Details Screen
+        composable(
+            route = "doctor_details/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType})
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("id")
+            DoctorDetailsScreen(id = id)
         }
     }
 }
@@ -240,9 +229,76 @@ private fun ScheduleContent(
     }
 }
 
-
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun HomeScreenPreview() {
-    HomeScreen()
+fun SearchableDoctorList(
+    navController: NavController,
+    viewModel: DoctorViewModel = viewModel()
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    val doctors by viewModel.doctors.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = {
+                Text(
+                    text = "Search doctor or health issue",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.W400,
+                    color = PurpleGrey
+                )
+            },
+            leadingIcon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_search),
+                    contentDescription = "Search Icon"
+                )
+            },
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        val filteredDoctors = if (searchQuery.isBlank()) doctors else {
+            doctors.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        }
+
+        if (isLoading) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                androidx.compose.material3.CircularProgressIndicator(color = BluePrimary)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Fetching doctors, please wait...",
+                    color = PurpleGrey,
+                    fontFamily = poppinsFontFamily
+                )
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(filteredDoctors) { doctor ->
+                    NearDoctorCard(doctor = doctor, navController = navController)
+                }
+            }
+        }
+    }
 }
+
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun HomeScreenPreview() {
+//    HomeScreen()
+//}

@@ -8,7 +8,9 @@ import kotlinx.coroutines.tasks.await
 data class Doctor(
     val name: String = "",
     val specialty: String = "",
-    val imageRes: Int = R.drawable.ic_doctor // Placeholder image
+    val imageRes: Int = R.drawable.ic_doctor,
+    val openingTime: String = "",
+    val id: Int
 )
 
 object DoctorRepository {
@@ -21,11 +23,13 @@ object DoctorRepository {
                 val name = doc.getString("name") ?: return@mapNotNull null
                 val specialty = doc.getString("specialty") ?: return@mapNotNull null
                 val imageName = doc.getString("imageRes") ?: return@mapNotNull null
+                val openingTime = doc.getString("openingTime") ?: return@mapNotNull null
+                val id = doc.getLong("id")?.toInt() ?: return@mapNotNull null
 
                 // Map image names to drawable resources
                 val imageRes = mapImageNameToResource(imageName)
 
-                Doctor(name, specialty, imageRes)
+                Doctor(name, specialty, imageRes, openingTime, id)
             }
         } catch (e: Exception) {
             Log.e("DoctorRepository", "Error fetching doctors: ${e.message}")

@@ -19,6 +19,8 @@ import java.util.UUID
 class AuthenticationManager(val context: Context) {
     private val auth = Firebase.auth
 
+    private val web_client_id = "214989153058-rvv6lo0g34kqdmqbu5r37qq3he8fsr3p.apps.googleusercontent.com"
+
     fun createAccountWithEmail(email: String, password: String): Flow<AuthResponse> = callbackFlow {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -52,7 +54,7 @@ class AuthenticationManager(val context: Context) {
     fun signInWithGoogle(): Flow<AuthResponse> = callbackFlow {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(context.getString(R.string.client_id))
+            .setServerClientId(web_client_id)
             .setAutoSelectEnabled(false) // Disabling auto select
             .setNonce(createNonce())
             .build()

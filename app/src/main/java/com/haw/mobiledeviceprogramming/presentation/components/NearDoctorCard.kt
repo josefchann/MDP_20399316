@@ -2,6 +2,7 @@ package com.haw.mobiledeviceprogramming.presentation.components
 
 import DoctorViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,118 +45,119 @@ import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleRating
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @Composable
 fun NearDoctorCard(
-    index: Int,
-    modifier: Modifier = Modifier,
-    viewModel: DoctorViewModel = viewModel()
+    doctor: Doctor,
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
-    val doctors by viewModel.doctors.collectAsState() // Observe doctors
-    val isLoading by viewModel.isLoading.collectAsState()
-
-    // Get a distinct doctor based on the index
-    val doctor = if (doctors.isNotEmpty() && index < doctors.size) {
-        doctors[index]
-    } else {
-        null
-    }
-
-    when {
-        isLoading && index == 0 -> {
-            // Show loading indicator for the first card
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-            ) {
-                androidx.compose.material3.CircularProgressIndicator(
-                    color = BluePrimary,
-                    modifier = Modifier.size(48.dp)
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = Color.White,
+        tonalElevation = 0.5.dp,
+        shadowElevation = 0.2.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
+        ) {
+            Row {
+                Image(
+                    modifier = Modifier.size(48.dp),
+                    painter = painterResource(id = doctor.imageRes),
+                    contentDescription = "Image of ${doctor.name}"
                 )
-                Text(
-                    text = "Fetching doctors, please wait...",
-                    modifier = Modifier.padding(top = 8.dp),
-                    color = PurpleGrey,
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-            }
-        }
-        doctor != null -> {
-            // Render the card for the doctor
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White,
-                tonalElevation = 0.5.dp,
-                shadowElevation = 0.2.dp
-            ) {
+
                 Column(
-                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .weight(1f),
                 ) {
-                    Row {
-                        Image(
-                            modifier = Modifier.size(48.dp),
-                            painter = painterResource(id = doctor.imageRes),
-                            contentDescription = "Image of ${doctor.name}"
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-                                .weight(1f),
-                        ) {
-                            Text(
-                                text = doctor.name,
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.Bold,
-                                color = TextColorTitle
-                            )
-
-                            Text(
-                                text = doctor.specialty,
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.Light,
-                                color = PurpleGrey
-                            )
-                        }
-                    }
-
-                    Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                            .height(1.dp)
-                            .alpha(0.1f),
-                        color = Color.Gray
+                    Text(
+                        text = doctor.name,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = TextColorTitle
                     )
 
+                    Text(
+                        text = doctor.specialty,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Light,
+                        color = PurpleGrey
+                    )
+                }
+            }
+
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+                    .height(1.dp)
+                    .alpha(0.1f),
+                color = Color.Gray
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                BottomItem(
+                    icon = R.drawable.ic_review,
+                    title = sampleRating.random().rating,
+                    color = Orange
+                )
+
+                BottomItem(
+                    icon = R.drawable.ic_clock,
+                    title = "Opens at ${doctor.openingTime}", // Hardcoded for now
+                    color = BluePrimary
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF63B4FF).copy(alpha = 0.1f)),
+                    onClick = {
+                        navController.navigate("doctor_details/${doctor.id}")
+                    }
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        BottomItem(
-                            icon = R.drawable.ic_review,
-                            title = sampleRating.random().rating,
-                            color = Orange
+                        Text(
+                            text = "For More Details",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Medium,
+                            color = BluePrimary
                         )
 
-                        BottomItem(
-                            icon = R.drawable.ic_clock,
-                            title = "Open at 17.00", // Hardcoded for now
-                            color = BluePrimary
+                        Image(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = "Navigate to Details",
+                            colorFilter = ColorFilter.tint(BluePrimary)
                         )
                     }
                 }
             }
+
         }
     }
 }
-
 
 @Composable
 private fun BottomItem(modifier: Modifier = Modifier, icon: Int, title: String, color: Color) {
