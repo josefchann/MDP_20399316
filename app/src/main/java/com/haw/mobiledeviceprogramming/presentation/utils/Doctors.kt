@@ -10,7 +10,9 @@ data class Doctor(
     val specialty: String = "",
     val imageRes: Int = R.drawable.ic_doctor,
     val openingTime: String = "",
-    val id: Int
+    val id: Int,
+    val education: String = "",
+    val consultationFee: Int
 )
 
 object DoctorRepository {
@@ -25,11 +27,13 @@ object DoctorRepository {
                 val imageName = doc.getString("imageRes") ?: return@mapNotNull null
                 val openingTime = doc.getString("openingTime") ?: return@mapNotNull null
                 val id = doc.getLong("id")?.toInt() ?: return@mapNotNull null
+                val education = doc.getString("education") ?: return@mapNotNull null
+                val consultationFee = doc.getLong("consultationFee")?.toInt() ?: return@mapNotNull null
 
                 // Map image names to drawable resources
                 val imageRes = mapImageNameToResource(imageName)
 
-                Doctor(name, specialty, imageRes, openingTime, id)
+                Doctor(name, specialty, imageRes, openingTime, id, education, consultationFee)
             }
         } catch (e: Exception) {
             Log.e("DoctorRepository", "Error fetching doctors: ${e.message}")

@@ -40,5 +40,10 @@ class DoctorViewModel : ViewModel() {
             null
         }
     }
+
+    fun getDoctorById(id: Int): Doctor? {
+        Log.d("DoctorViewModel", "Searching for doctor with ID: $id in list: ${_doctors.value}")
+        return _doctors.value.find { it.id == id }
+    }
 }
 

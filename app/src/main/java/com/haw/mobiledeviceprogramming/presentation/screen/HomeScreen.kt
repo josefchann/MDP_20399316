@@ -1,13 +1,12 @@
 package com.haw.mobiledeviceprogramming.presentation.screen
 
+import com.haw.mobiledeviceprogramming.presentation.components.DoctorDetailsScreen
 import DoctorViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,20 +35,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.haw.mobiledeviceprogramming.R
-import com.haw.mobiledeviceprogramming.presentation.components.MenuHome
 import com.haw.mobiledeviceprogramming.presentation.components.NearDoctorCard
 import com.haw.mobiledeviceprogramming.presentation.components.ScheduleTimeContent
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.GraySecond
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
-import com.haw.mobiledeviceprogramming.ui.theme.WhiteBackground
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
-import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType

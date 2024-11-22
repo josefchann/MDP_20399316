@@ -1,12 +1,11 @@
 package com.haw.mobiledeviceprogramming.presentation.utils
+import com.haw.mobiledeviceprogramming.presentation.components.DoctorDetailsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
-import com.haw.mobiledeviceprogramming.presentation.screen.DoctorDetailsScreen
-import com.haw.mobiledeviceprogramming.presentation.screen.HomeScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.HomeScreenWithNavigation
 import com.haw.mobiledeviceprogramming.presentation.screen.ScheduleScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.MedicineScreen
