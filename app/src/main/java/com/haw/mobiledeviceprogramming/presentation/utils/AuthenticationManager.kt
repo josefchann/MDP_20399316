@@ -1,6 +1,7 @@
 package com.haw.mobiledeviceprogramming
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -10,11 +11,13 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.security.MessageDigest
 import java.util.UUID
+
 
 class AuthenticationManager(val context: Context) {
     private val auth = Firebase.auth
@@ -51,7 +54,7 @@ class AuthenticationManager(val context: Context) {
         return digest.fold("") { str, it -> str + "%02x".format(it) }
     }
 
-    fun signInWithGoogle(): Flow<AuthResponse> = callbackFlow {
+    fun signInWithGoogle(userViewModel: UserViewModel): Flow<AuthResponse> = callbackFlow {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(web_client_id)
@@ -80,10 +83,33 @@ class AuthenticationManager(val context: Context) {
 
                         auth.signInWithCredential(firebaseCredential).addOnCompleteListener { task ->
                             if (task.isSuccessful) {
+                                Log.d("GoogleSignIn", "Authentication task successful.")
+
+                                // Retrieve the user information from Firebase
+                                val firebaseUser = auth.currentUser
+                                if (firebaseUser != null) {
+                                    Log.d("GoogleSignIn", "User Display Name: ${firebaseUser.displayName}")
+                                    Log.d("GoogleSignIn", "User Profile Picture URL: ${firebaseUser.photoUrl}")
+                                } else {
+                                    Log.e("GoogleSignIn", "auth.currentUser is null, cannot retrieve user info.")
+                                }
+
+                                val userName = firebaseUser?.displayName ?: "User"
+                                val userProfilePictureUrl = firebaseUser?.photoUrl?.toString() ?: ""
+
+                                Log.d("GoogleSignIn", "Final User Name: $userName")
+                                Log.d("GoogleSignIn", "Final User Profile Picture URL: $userProfilePictureUrl")
+
+                                // Update the ViewModel with the user's name and profile picture URL
+                                userViewModel.setUser(userName, userProfilePictureUrl)
+
                                 trySend(AuthResponse.Success)
                             } else {
-                                trySend(AuthResponse.Error(task.exception?.message ?: "Unknown error"))
+                                val errorMessage = task.exception?.message ?: "Unknown error"
+                                Log.e("GoogleSignIn", "Authentication task failed. Error: $errorMessage")
+                                trySend(AuthResponse.Error(errorMessage))
                             }
+
                         }
                     } catch (e: GoogleIdTokenParsingException) {
                         trySend(AuthResponse.Error(e.message ?: "Unknown error"))
@@ -97,6 +123,8 @@ class AuthenticationManager(val context: Context) {
 
         awaitClose()
     }
+
+
 }
 
 sealed interface AuthResponse {

@@ -1,6 +1,7 @@
 package com.haw.mobiledeviceprogramming.presentation.components
 
 import DoctorViewModel
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
+import com.haw.mobiledeviceprogramming.ui.theme.DarkBlue
 
 @Composable
 fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
@@ -32,6 +37,9 @@ fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
 
     val doctors by viewModel.doctors.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    // State to control the visibility of the dialog
+
 
     if (isLoading) {
         Box(
@@ -58,7 +66,9 @@ fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
                 // Appointment Button
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = { /* Navigate to appointment screen */ },
+                    onClick = {
+
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
@@ -68,8 +78,15 @@ fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
                 ) {
                     Text("Request Appointment", color = Color.White)
                 }
-
             }
+
+            // Check if the dialog should be displayed
+//            if (showDialog) {
+//                AppointmentDialog(doctor = doctor, onDismiss = {
+//                    showDialog = false
+//                    println("Dialog dismissed")
+//                })
+//            }
         } else {
             Text(
                 text = "Doctor with ID $id not found.",
@@ -95,13 +112,15 @@ fun ProfileSection(doctor: Doctor) {
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .background(
-                color = BluePrimary, // Use your custom BluePrimary color
-                shape = RoundedCornerShape(12.dp) // Rounded corners
+            .border(
+                width = 1.dp, // Thickness of the border
+                color = Color(0xFF061A40), // Border color
+                shape = RoundedCornerShape(24.dp) // Shape of the border
             )
             .padding(16.dp),
         contentAlignment = Alignment.Center // Center all content inside the Box
-    ) {
+    )
+ {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center // Center the content horizontally
@@ -112,20 +131,19 @@ fun ProfileSection(doctor: Doctor) {
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
-                    .border(1.dp, Color.White, CircleShape)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = doctor.name,
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White
+                    color = Color.Black
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = doctor.specialty,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = Color.Black.copy(alpha = 0.7f)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -142,6 +160,7 @@ fun DoctorStats(doctor: Doctor) {
         StatsRow(label = "Education", value = doctor.education)
         StatsRow(label = "Available Timings", value = doctor.openingTime)
         StatsRow(label = "Consultation Fee", value = "RM${doctor.consultationFee} / Consultation")
+        StatsRow(label = "Location", value = doctor.location)
     }
 }
 

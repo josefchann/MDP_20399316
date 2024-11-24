@@ -1,6 +1,7 @@
 package com.haw.mobiledeviceprogramming
 
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,18 +21,43 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
+import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    userViewModel: UserViewModel
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val authenticationManager = remember { AuthenticationManager(context) }
     val coroutineScope = rememberCoroutineScope()
+
+    // Helper function to handle login responses
+    fun handleAuthResponse(response: AuthResponse) {
+        when (response) {
+            is AuthResponse.Success -> {
+
+                // Navigate to Home
+                navController.navigate("main")
+                Toast.makeText(context, "Login Success!", Toast.LENGTH_LONG).show()
+            }
+            is AuthResponse.Error -> {
+                // Show error message
+                Toast.makeText(context, response.message, Toast.LENGTH_LONG).show()
+            }
+            else -> {
+                // Handle unexpected cases
+                Toast.makeText(context, "Unexpected response", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -78,34 +104,27 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
+                isLoading = true
                 authenticationManager.loginWithEmail(email, password)
                     .onEach { response ->
-                        when (response) {
-                            is AuthResponse.Success -> {
-                                // Navigate to Home
-                                navController.navigate(BottomNavItemScreen.Home.route)
-                                Toast.makeText(context, "Login Success!", Toast.LENGTH_LONG).show()
-                            }
-                            is AuthResponse.Error -> {
-                                // Show error message
-                                Toast.makeText(context, response.message, Toast.LENGTH_LONG).show()
-                            }
-                            else -> {
-                                // Handle unexpected cases
-                                Toast.makeText(context, "Unexpected response", Toast.LENGTH_LONG).show()
-                            }
-                        }
+                        handleAuthResponse(response)
+                        isLoading = false
                     }
                     .launchIn(coroutineScope)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         ) {
-            Text(
-                text = "Sign-in",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+            if (isLoading) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+            } else {
+                Text(
+                    text = "Sign-in",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -119,30 +138,18 @@ fun LoginScreen(navController: NavController) {
 
         OutlinedButton(
             onClick = {
-                authenticationManager.signInWithGoogle()
+                isLoading = true
+                authenticationManager.signInWithGoogle(userViewModel)
                     .onEach { response ->
-                        when (response) {
-                            is AuthResponse.Success -> {
-                                // Navigate to Home
-                                navController.navigate(BottomNavItemScreen.Home.route) {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            }
-                            is AuthResponse.Error -> {
-                                // Show error message
-                                Toast.makeText(context, response.message, Toast.LENGTH_LONG).show()
-                            }
-                            else -> {
-                                // Handle unexpected cases
-                                Toast.makeText(context, "Unexpected response", Toast.LENGTH_LONG).show()
-                            }
-                        }
+                        handleAuthResponse(response)
+                        isLoading = false
                     }
                     .launchIn(coroutineScope)
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp)
+                .padding(vertical = 10.dp),
+            enabled = !isLoading
         ) {
             Image(
                 painter = painterResource(id = R.drawable.img_google),
@@ -160,3 +167,4 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
+

@@ -17,15 +17,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,6 +36,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -53,12 +57,13 @@ import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleRating
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.haw.mobiledeviceprogramming.ui.theme.DarkBlue
+import com.haw.mobiledeviceprogramming.ui.theme.LightBlue
+import com.haw.mobiledeviceprogramming.ui.theme.NavyBlue
 
 @Composable
 fun NearDoctorCard(
-    doctor: Doctor,
-    navController: NavController,
-    modifier: Modifier = Modifier
+    doctor: Doctor
 ) {
     val showBottomSheet = remember { mutableStateOf(false) }
 
@@ -174,6 +179,7 @@ fun NearDoctorCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoctorDetailsBottomSheet(
     doctorId: Int,
@@ -186,6 +192,7 @@ fun DoctorDetailsBottomSheet(
     ) {
         val doctor by remember { derivedStateOf { viewModel.getDoctorById(doctorId) } }
         val isLoading by viewModel.isLoading.collectAsState()
+        var showDialog by remember { mutableStateOf(false) }
 
         if (isLoading) {
             Box(
@@ -207,17 +214,29 @@ fun DoctorDetailsBottomSheet(
                 DoctorStats(doctor = doctor!!)
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = { /* Navigate to Appointment */ },
+                    onClick = {
+                        showDialog = true
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
+                        containerColor = DarkBlue, // Set your custom color here
+                        contentColor = Color.White    // Text color for contrast
                     )
                 ) {
                     Text("Request Appointment", color = Color.White)
                 }
             }
+
+            // Check if the dialog should be displayed
+            if (showDialog) {
+                AppointmentDialog(doctor = doctor!!, onDismiss = {
+
+                    showDialog = false
+                    println("Dialog dismissed")
+                })
+            }
+
         } else {
             Text(
                 text = "Doctor details not found.",
@@ -230,6 +249,79 @@ fun DoctorDetailsBottomSheet(
             )
         }
     }
+}
+
+@Composable
+fun AppointmentDialog(doctor: Doctor, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = null, // Remove default title
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Hero Icon
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_date), // Replace with an appropriate icon
+                    contentDescription = "Appointment Icon",
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Dialog Title
+                Text(
+                    text = "Appointment Details",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Dialog Content
+                Text(
+                    text = "Doctor: ${doctor.name}\n" +
+                            "Specialty: ${doctor.specialty}\n" +
+                            "Consultation Fee: RM${doctor.consultationFee}\n" +
+                            "Available Timings: ${doctor.openingTime}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        confirmButton = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Dismiss Button
+                TextButton(onClick = onDismiss) {
+                    Text("Dismiss", color = MaterialTheme.colorScheme.primary)
+                }
+
+                // Confirm Button
+                Button(
+                    onClick = { onDismiss() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BluePrimary, // Set your custom color here
+                        contentColor = Color.White    // Text color for contrast
+                    )
+                ) {
+                    Text("Confirm")
+                }
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(16.dp), // Rounded corners for the dialog
+        tonalElevation = 8.dp
+    )
 }
 
 @Composable

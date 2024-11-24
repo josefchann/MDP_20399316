@@ -12,7 +12,8 @@ data class Doctor(
     val openingTime: String = "",
     val id: Int,
     val education: String = "",
-    val consultationFee: Int
+    val consultationFee: Int,
+    val location: String = ""
 )
 
 object DoctorRepository {
@@ -29,11 +30,12 @@ object DoctorRepository {
                 val id = doc.getLong("id")?.toInt() ?: return@mapNotNull null
                 val education = doc.getString("education") ?: return@mapNotNull null
                 val consultationFee = doc.getLong("consultationFee")?.toInt() ?: return@mapNotNull null
+                val location = doc.getString("location") ?: return@mapNotNull null
 
                 // Map image names to drawable resources
                 val imageRes = mapImageNameToResource(imageName)
 
-                Doctor(name, specialty, imageRes, openingTime, id, education, consultationFee)
+                Doctor(name, specialty, imageRes, openingTime, id, education, consultationFee, location)
             }
         } catch (e: Exception) {
             Log.e("DoctorRepository", "Error fetching doctors: ${e.message}")

@@ -2,6 +2,7 @@ package com.haw.mobiledeviceprogramming.presentation.screen
 
 import com.haw.mobiledeviceprogramming.presentation.components.DoctorDetailsScreen
 import DoctorViewModel
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
@@ -51,12 +54,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import coil.compose.rememberAsyncImagePainter
+import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: DoctorViewModel = viewModel() // Pass the ViewModel here
+    viewModel: DoctorViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel() // Use the same UserViewModel instance here
 ) {
     Surface(
         modifier = modifier
@@ -64,14 +70,16 @@ fun HomeScreen(
     ) {
         Column {
             // Header Content
-            HeaderContent()
+            HeaderContent(
+                userViewModel = userViewModel // Pass UserViewModel directly here
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             // Schedule Content
             ScheduleContent()
 
-            //Search Bar
+            // Search Bar
             SearchableDoctorList(navController = navController, viewModel = viewModel)
         }
     }
@@ -87,13 +95,14 @@ fun HomeScreenWithNavigation() {
     ) {
         // List Screen
         composable("doctor_list") {
-            HomeScreen(navController = navController) // Pass navController here
+            // Use the same UserViewModel instance here
+            HomeScreen(navController = navController)
         }
 
         // Details Screen
         composable(
             route = "doctor_details/{id}",
-            arguments = listOf(navArgument("id") { type = NavType.IntType})
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id")
             DoctorDetailsScreen(id = id)
@@ -102,10 +111,18 @@ fun HomeScreenWithNavigation() {
 }
 
 @Composable
-private fun HeaderContent(modifier: Modifier = Modifier) {
+private fun HeaderContent(
+    modifier: Modifier = Modifier,
+    userViewModel: UserViewModel
+) {
+    val user = userViewModel.user
+
+    // Debugging Log to check if the user data is being updated
+    Log.d("HeaderContent", "User Data: ${user.name}, ${user.profilePictureUrl}")
+
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
@@ -119,18 +136,21 @@ private fun HeaderContent(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Hi, Shidiq",
+                text = "Welcome Back",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
         }
 
-        Image(
-            modifier = Modifier.size(56.dp),
-            painter = painterResource(id = R.drawable.img_header_content),
-            contentDescription = "Image Header Content"
-        )
+        if (user.profilePictureUrl.isNotEmpty()) {
+            Image(
+                modifier = Modifier.size(56.dp),
+                painter = painterResource(id = R.drawable.img_header_content),
+//                painter = rememberAsyncImagePainter(user.profilePictureUrl),
+                contentDescription = "User Profile Picture"
+            )
+        }
     }
 }
 
@@ -219,7 +239,7 @@ private fun ScheduleContent(
             modifier = Modifier.fillMaxWidth(),
             color = Color.White,
             fontFamily = poppinsFontFamily,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -274,7 +294,7 @@ fun SearchableDoctorList(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                androidx.compose.material3.CircularProgressIndicator(color = BluePrimary)
+                CircularProgressIndicator(color = BluePrimary)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Fetching doctors, please wait...",
@@ -285,15 +305,10 @@ fun SearchableDoctorList(
         } else {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(filteredDoctors) { doctor ->
-                    NearDoctorCard(doctor = doctor, navController = navController)
+                    NearDoctorCard(doctor = doctor)
                 }
             }
         }
     }
 }
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//private fun HomeScreenPreview() {
-//    HomeScreen()
-//}
