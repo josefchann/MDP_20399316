@@ -53,6 +53,9 @@ android {
 dependencies {
 
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.material)
+    implementation(libs.androidx.runtime.livedata)
     val credentialsManagerVersion = "1.5.0-alpha05"
     implementation("androidx.credentials:credentials:$credentialsManagerVersion")
     implementation ("com.google.android.gms:play-services-auth:20.4.0'")

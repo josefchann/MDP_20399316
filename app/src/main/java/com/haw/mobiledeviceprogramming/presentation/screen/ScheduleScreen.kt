@@ -2,6 +2,7 @@ package com.haw.mobiledeviceprogramming.presentation.screen
 
 import DoctorViewModel
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -32,55 +34,67 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun ScheduleScreen(
     modifier: Modifier = Modifier,
-    viewModel: DoctorViewModel = viewModel()
+    viewModel: DoctorViewModel = viewModel(),
 ) {
-    val doctors by viewModel.doctors.collectAsState()
+    val appointments by viewModel.appointments.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchDoctors()
+        viewModel.fetchUserAppointmentsAndDoctors()
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (doctors.isEmpty()) {
-                item {
+        Text(
+            text = "Appointments",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp, start = 16.dp, end = 16.dp),
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Bold,
+            color = BluePrimary,
+            fontSize = 24.sp,
+            textAlign = TextAlign.Start
+        )
+
+        if (isLoading) {
+            Text(
+                text = "Loading appointments...",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+                textAlign = TextAlign.Center,
+                color = Color.Gray
+            )
+        } else {
+            // Check if the appointments list is empty and display a message if it is
+            if (appointments.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
-                        text = "Loading doctors...",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        color = Color.Gray
+                        text = "No Scheduled Appointments.",
+                        fontFamily = poppinsFontFamily,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
             } else {
-                items(5) { index -> // Adjust the count as needed
-                    ScheduleDoctorCard(index = index, viewModel = viewModel)
+                // Display the list of appointments if not empty
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(appointments) { appointment ->
+                        ScheduleDoctorCard(
+                            doctor = appointment.doctor,
+                            appointment = appointment
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun CategorySchedule(modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp, start = 16.dp, end = 16.dp),
-        text = "Appointments",
-        fontFamily = poppinsFontFamily,
-        color = BluePrimary,
-        fontWeight = FontWeight.Bold,
-        fontSize = 24.sp,
-        textAlign = TextAlign.Start
-    )
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun ScheduleScreenPreview() {
-    ScheduleScreen()
 }

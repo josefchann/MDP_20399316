@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.haw.mobiledeviceprogramming.R
 import com.haw.mobiledeviceprogramming.presentation.components.NearDoctorCard
-import com.haw.mobiledeviceprogramming.presentation.components.ScheduleTimeContent
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.GraySecond
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
@@ -55,6 +56,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.compose.rememberAsyncImagePainter
+import com.haw.mobiledeviceprogramming.presentation.crud.Appointment
+import com.haw.mobiledeviceprogramming.presentation.utils.sampleDate
+import com.haw.mobiledeviceprogramming.presentation.utils.sampleTime
 import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 
 @Composable
@@ -65,8 +69,7 @@ fun HomeScreen(
     userViewModel: UserViewModel = viewModel() // Use the same UserViewModel instance here
 ) {
     Surface(
-        modifier = modifier
-            .padding(top = 42.dp, start = 16.dp, end = 16.dp)
+        modifier = modifier.padding(top = 42.dp, start = 16.dp, end = 16.dp)
     ) {
         Column {
             // Header Content
@@ -76,7 +79,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Schedule Content
+//            // Schedule Content
             ScheduleContent()
 
             // Search Bar
@@ -90,8 +93,7 @@ fun HomeScreenWithNavigation() {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController,
-        startDestination = "doctor_list"
+        navController = navController, startDestination = "doctor_list"
     ) {
         // List Screen
         composable("doctor_list") {
@@ -112,8 +114,7 @@ fun HomeScreenWithNavigation() {
 
 @Composable
 private fun HeaderContent(
-    modifier: Modifier = Modifier,
-    userViewModel: UserViewModel
+    modifier: Modifier = Modifier, userViewModel: UserViewModel
 ) {
     val user = userViewModel.user
 
@@ -157,19 +158,21 @@ private fun HeaderContent(
 @Composable
 private fun ScheduleContent(
     modifier: Modifier = Modifier,
-    viewModel: DoctorViewModel = viewModel() // Use ViewModel to fetch doctors
+    viewModel: DoctorViewModel = viewModel(),
 ) {
-    val doctors by viewModel.doctors.collectAsState() // Observe the doctor list
+    val doctors by viewModel.doctors.collectAsState()
+    val appointments by viewModel.appointments.collectAsState()
 
-    // Trigger fetching of doctors
+    // Trigger fetching of doctors and appointments
     LaunchedEffect(Unit) {
         viewModel.fetchDoctors()
+        viewModel.fetchUserAppointmentsAndDoctors()
     }
 
-    // Get a random doctor or show loading state
-    val doctor = if (doctors.isNotEmpty()) doctors.random() else null
+    // Get a random appointment or show loading state
+    val appointment = if (appointments.isNotEmpty()) appointments.random() else null
 
-    if (doctor != null) {
+    if (appointment != null) {
         Surface(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -180,14 +183,36 @@ private fun ScheduleContent(
             Column(
                 modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
             ) {
+                Text(
+                    text = "Your Upcoming Appointment",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold, color = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp), // Adds spacing below the header
+                    textAlign = TextAlign.Start
+                )
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                        .height(1.dp)
+                        .alpha(0.2f), color = Color.White
+                )
+
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                        .padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Image(
                         modifier = Modifier.size(48.dp),
-                        painter = painterResource(id = doctor.imageRes),
+                        painter = painterResource(id = appointment.doctor.imageRes),
                         contentDescription = "Image Doctor"
                     )
 
@@ -197,26 +222,19 @@ private fun ScheduleContent(
                             .weight(1f)
                     ) {
                         Text(
-                            text = doctor.name,
+                            text = appointment.doctor.name,
                             fontFamily = poppinsFontFamily,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
 
                         Text(
-                            text = doctor.specialty,
+                            text = appointment.doctor.specialty,
                             fontFamily = poppinsFontFamily,
                             fontWeight = FontWeight.Light,
                             color = GraySecond
                         )
                     }
-
-                    Image(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Default.KeyboardArrowRight,
-                        contentDescription = "Arrow Next",
-                        colorFilter = ColorFilter.tint(color = Color.White)
-                    )
                 }
 
                 Divider(
@@ -224,19 +242,35 @@ private fun ScheduleContent(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)
                         .height(1.dp)
-                        .alpha(0.2f),
-                    color = Color.White
+                        .alpha(0.2f), color = Color.White
                 )
 
                 // Schedule Time Content
-                ScheduleTimeContent()
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Content(
+                        icon = R.drawable.ic_date,
+                        title = appointment.appointmentDate,
+                        contentColor = Color.White
+                    )
+
+                    Content(
+                        icon = R.drawable.ic_clock,
+                        title = appointment.doctor.openingTime,
+                        contentColor = Color.White
+                    )
+                }
             }
         }
     } else {
         // Loading placeholder
         Text(
             text = "Loading...",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
             color = Color.White,
             fontFamily = poppinsFontFamily,
             textAlign = TextAlign.Center
@@ -244,10 +278,10 @@ private fun ScheduleContent(
     }
 }
 
+
 @Composable
 fun SearchableDoctorList(
-    navController: NavController,
-    viewModel: DoctorViewModel = viewModel()
+    navController: NavController, viewModel: DoctorViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val doctors by viewModel.doctors.collectAsState()
@@ -262,7 +296,7 @@ fun SearchableDoctorList(
             onValueChange = { searchQuery = it },
             placeholder = {
                 Text(
-                    text = "Search doctor or health issue",
+                    text = "Search for Doctor",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.W400,
                     color = PurpleGrey
@@ -282,9 +316,17 @@ fun SearchableDoctorList(
             shape = RoundedCornerShape(12.dp)
         )
 
-        val filteredDoctors = if (searchQuery.isBlank()) doctors else {
-            doctors.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        val filteredDoctors = if (searchQuery.isBlank()) {
+            doctors
+        } else {
+            doctors.filter {
+                it.name.contains(searchQuery, ignoreCase = true) || it.specialty.contains(
+                    searchQuery,
+                    ignoreCase = true
+                )
+            }
         }
+
 
         if (isLoading) {
             Column(
@@ -312,3 +354,28 @@ fun SearchableDoctorList(
     }
 }
 
+@Composable
+private fun Content(
+    modifier: Modifier = Modifier, icon: Int, title: String, contentColor: Color
+) {
+    Row(
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier.size(16.dp),
+            painter = painterResource(id = icon),
+            colorFilter = ColorFilter.tint(color = contentColor),
+            contentDescription = "Icon Date"
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = title,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.W400,
+            color = contentColor,
+            fontSize = 12.sp
+        )
+    }
+}

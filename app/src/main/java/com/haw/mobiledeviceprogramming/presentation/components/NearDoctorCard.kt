@@ -3,6 +3,9 @@
 package com.haw.mobiledeviceprogramming.presentation.components
 
 import DoctorViewModel
+import android.app.DatePickerDialog
+import android.icu.util.Calendar
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,9 +61,10 @@ import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleRating
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.haw.mobiledeviceprogramming.presentation.crud.Appointment
+import com.haw.mobiledeviceprogramming.presentation.crud.createAppointment
 import com.haw.mobiledeviceprogramming.ui.theme.DarkBlue
-import com.haw.mobiledeviceprogramming.ui.theme.LightBlue
-import com.haw.mobiledeviceprogramming.ui.theme.NavyBlue
 
 @Composable
 fun NearDoctorCard(
@@ -252,7 +257,34 @@ fun DoctorDetailsBottomSheet(
 }
 
 @Composable
-fun AppointmentDialog(doctor: Doctor, onDismiss: () -> Unit) {
+fun AppointmentDialog(
+    doctor: Doctor,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    var selectedDate by remember { mutableStateOf<String?>(null) }
+
+    // Function to show DatePickerDialog
+    fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        DatePickerDialog(
+            context,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                // Format the date as DD/MM/YYYY
+                val formattedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                selectedDate = formattedDate
+            },
+            year,
+            month,
+            day
+        ).show()
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = null, // Remove default title
@@ -264,25 +296,25 @@ fun AppointmentDialog(doctor: Doctor, onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Hero Icon
+                // Icon
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_date), // Replace with an appropriate icon
+                    painter = painterResource(id = R.drawable.ic_date), // Replace with your icon resource
                     contentDescription = "Appointment Icon",
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Dialog Title
+                // Title
                 Text(
                     text = "Appointment Details",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Dialog Content
+                // Doctor Info
                 Text(
                     text = "Doctor: ${doctor.name}\n" +
                             "Specialty: ${doctor.specialty}\n" +
@@ -292,6 +324,19 @@ fun AppointmentDialog(doctor: Doctor, onDismiss: () -> Unit) {
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Date Picker Button
+                Button(
+                    onClick = { showDatePicker() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = if (selectedDate.isNullOrEmpty()) "Select Date" else "Selected Date: $selectedDate")
+                }
             }
         },
         confirmButton = {
@@ -303,15 +348,44 @@ fun AppointmentDialog(doctor: Doctor, onDismiss: () -> Unit) {
             ) {
                 // Dismiss Button
                 TextButton(onClick = onDismiss) {
-                    Text("Dismiss", color = MaterialTheme.colorScheme.primary)
+                    Text("Cancel", color = MaterialTheme.colorScheme.primary)
                 }
 
                 // Confirm Button
                 Button(
-                    onClick = { onDismiss() },
+                    onClick = {
+                        // Ensure the user has selected a date
+                        if (!selectedDate.isNullOrEmpty()) {
+                            val userUuid = currentUser?.uid
+                            if (userUuid != null) {
+                                val appointment = Appointment(
+                                    userUuid = userUuid,
+                                    doctor = doctor,
+                                    appointmentDate = selectedDate!!
+                                )
+                                createAppointment(
+                                    context = context,
+                                    appointment = appointment,
+                                    onSuccess = {
+                                        Toast.makeText(context, "Appointment confirmed!", Toast.LENGTH_SHORT).show()
+                                        onDismiss() // Close the dialog
+                                    },
+                                    onFailure = { exception ->
+                                        Toast.makeText(context, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            } else {
+                                println("Error: User not signed in.")
+                                // Handle this scenario, e.g., redirect to sign-in
+                            }
+                        } else {
+                            println("Please select a date first")
+                        }
+                    },
+                    enabled = !selectedDate.isNullOrEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BluePrimary, // Set your custom color here
-                        contentColor = Color.White    // Text color for contrast
+                        containerColor = Color(0xFF0353A4), // Dark Blue
+                        contentColor = Color.White
                     )
                 ) {
                     Text("Confirm")
@@ -323,6 +397,7 @@ fun AppointmentDialog(doctor: Doctor, onDismiss: () -> Unit) {
         tonalElevation = 8.dp
     )
 }
+
 
 @Composable
 private fun BottomItem(modifier: Modifier = Modifier, icon: Int, title: String, color: Color) {

@@ -8,13 +8,25 @@ import kotlinx.coroutines.tasks.await
 data class Doctor(
     val name: String = "",
     val specialty: String = "",
-    val imageRes: Int = R.drawable.ic_doctor,
+    val imageRes: Int = R.drawable.ic_doctor, // Default image resource
     val openingTime: String = "",
-    val id: Int,
+    val id: Int = 0, // Default value for id
     val education: String = "",
-    val consultationFee: Int,
+    val consultationFee: Int = 0, // Default value for consultationFee
     val location: String = ""
-)
+) {
+    // No-argument constructor to support Firestore deserialization
+    constructor() : this(
+        name = "",
+        specialty = "",
+        imageRes = R.drawable.ic_doctor,
+        openingTime = "",
+        id = 0,
+        education = "",
+        consultationFee = 0,
+        location = ""
+    )
+}
 
 object DoctorRepository {
     private val firestore = FirebaseFirestore.getInstance()
@@ -43,8 +55,8 @@ object DoctorRepository {
         }
     }
 
-    private fun mapImageNameToResource(imageName: String): Int {
-        return when (imageName) {
+    fun mapImageNameToResource(imageName: String): Int {
+        val resource = when (imageName) {
             "img_ibnusina" -> R.drawable.img_ibnusina
             "img_ameliatan" -> R.drawable.img_ameliatan
             "img_michaelzhang" -> R.drawable.img_michaelzhang
@@ -52,5 +64,7 @@ object DoctorRepository {
             "img_johndoe" -> R.drawable.img_johndoe
             else -> R.drawable.ic_doctor
         }
+        Log.d("ImageMapping", "Mapping imageName: $imageName to resource: $resource")
+        return resource
     }
 }

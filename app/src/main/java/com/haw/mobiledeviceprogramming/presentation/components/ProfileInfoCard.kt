@@ -11,12 +11,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 
 @Composable
-fun ProfileInfoCard(modifier: Modifier = Modifier) {
+fun ProfileInfoCard(
+    condition: String,
+    date: String,
+    modifier: Modifier = Modifier
+) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -28,13 +31,13 @@ fun ProfileInfoCard(modifier: Modifier = Modifier) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Fever",
+                text = condition,  // Use passed data
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 fontFamily = poppinsFontFamily
             )
             Text(
-                text = "17/08/2023",
+                text = date,  // Use passed data
                 fontSize = 14.sp,
                 color = BluePrimary,
                 fontFamily = poppinsFontFamily
@@ -43,8 +46,9 @@ fun ProfileInfoCard(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun ProfileInfoCardPreview() {
-    ProfileInfoCard()
-}
+
+//@Preview(showBackground = true)
+//@Composable
+//private fun ProfileInfoCardPreview() {
+//    ProfileInfoCard()
+//}

@@ -1,18 +1,9 @@
 package com.haw.mobiledeviceprogramming.presentation.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -21,25 +12,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.haw.mobiledeviceprogramming.R
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
 import com.haw.mobiledeviceprogramming.ui.theme.TextColorTitle
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.Medicine
-import com.haw.mobiledeviceprogramming.presentation.utils.getMedicine
 
 @Composable
 fun MedicineCard(
     modifier: Modifier = Modifier,
-    medicine: Medicine = getMedicine()  // Use a random medicine if no parameter is passed
+    medicine: Medicine,
+    onDetailClick: (Medicine) -> Unit = {} // Callback for detail action
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
         color = Color.White,
-        tonalElevation = 0.5.dp,
-        shadowElevation = 0.2.dp
+        tonalElevation = 1.dp,
+        shadowElevation = 1.dp
     ) {
         Column(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
@@ -48,25 +42,27 @@ fun MedicineCard(
                 Image(
                     modifier = Modifier.size(48.dp),
                     painter = painterResource(id = medicine.imageRes),
-                    contentDescription = "Image of ${medicine.name}"
+                    contentDescription = "Image of ${medicine.medicineName}"
                 )
 
+                Spacer(modifier = Modifier.width(12.dp))
+
                 Column(
-                    modifier = Modifier
-                        .padding(start = 12.dp)
-                        .weight(1f),
+                    modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = medicine.name,
+                        text = medicine.medicineName,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
                         color = TextColorTitle
                     )
 
                     Text(
-                        text = medicine.description,
+                        text = medicine.medicineUsage,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Light,
+                        fontSize = 14.sp,
                         color = PurpleGrey
                     )
                 }
@@ -77,34 +73,48 @@ fun MedicineCard(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .height(1.dp)
-                    .alpha(0.1f),
+                    .alpha(0.2f),
                 color = Color.Gray
             )
 
-            MedicationContent(contentColor = PurpleGrey)
-
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF63B4FF).copy(alpha = 0.1f)),
-                onClick = { /*TODO*/ }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Detail",
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Medium,
-                    color = BluePrimary
-                )
+                Column {
+                    Text(
+                        text = "Usage",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = PurpleGrey
+                    )
+                    Text(
+                        text = medicine.medicineUsage,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        color = TextColorTitle
+                    )
+                }
+
+                Column {
+                    Text(
+                        text = "Restock Date",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = PurpleGrey
+                    )
+                    Text(
+                        text = medicine.restockDate,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        color = TextColorTitle
+                    )
+                }
             }
         }
     }
-}
-
-
-
-@Preview
-@Composable
-private fun MedicineConsumptionCardPreview() {
-    MedicineCard()
 }

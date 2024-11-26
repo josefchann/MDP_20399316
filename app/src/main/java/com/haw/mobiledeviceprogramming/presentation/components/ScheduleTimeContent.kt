@@ -24,71 +24,10 @@ import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleDate
 import com.haw.mobiledeviceprogramming.presentation.utils.sampleTime
 
-@Composable
-fun ScheduleTimeContent(
-    modifier: Modifier = Modifier, contentColor: Color = Color.White
-) {
 
-    val randomDate = remember { sampleDate.random() }
-    val randomTime = remember { sampleTime.random() }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Content(icon = R.drawable.ic_date, title = randomDate.title, contentColor = contentColor)
-
-        Content(icon = R.drawable.ic_clock, title = randomTime.title, contentColor = contentColor)
-    }
-}
-
-@Composable
-fun MedicationContent(
-    modifier: Modifier = Modifier, contentColor: Color = Color.White
-) {
-
-    val randomDate = remember { sampleDate.random() }
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Content(icon = R.drawable.ic_date, title = "Restock Date: ${randomDate.title}", contentColor = contentColor)
-    }
-}
-
-@Composable
-private fun Content(
-    modifier: Modifier = Modifier,
-    icon: Int,
-    title: String,
-    contentColor: Color
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            modifier = Modifier.size(16.dp),
-            painter = painterResource(id = icon),
-            colorFilter = ColorFilter.tint(color = contentColor),
-            contentDescription = "Icon Date"
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = title,
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.W400,
-            color = contentColor,
-            fontSize = 12.sp
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ScheduleTimeContentPreview() {
-    ScheduleTimeContent()
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun ScheduleTimeContentPreview() {
+//    ScheduleTimeContent()
+//}
