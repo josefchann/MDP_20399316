@@ -5,9 +5,11 @@ import DoctorViewModel
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -172,7 +174,9 @@ private fun ScheduleContent(
     // Get a random appointment or show loading state
     val appointment = if (appointments.isNotEmpty()) appointments.random() else null
 
+    // Conditional rendering based on appointment status
     if (appointment != null) {
+        // Display the upcoming appointment details
         Surface(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -265,18 +269,31 @@ private fun ScheduleContent(
             }
         }
     } else {
-        // Loading placeholder
-        Text(
-            text = "Loading...",
+        // Show a "No upcoming appointments" placeholder as a card
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            color = Color.White,
-            fontFamily = poppinsFontFamily,
-            textAlign = TextAlign.Center
-        )
+                .height(150.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = Color(0xFFF5F5F5)
+        ) {
+            Box(
+                modifier = Modifier.padding(24.dp), // Add padding inside the card
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No upcoming appointments",
+                    color = Color.Gray,
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
 }
+
 
 
 @Composable

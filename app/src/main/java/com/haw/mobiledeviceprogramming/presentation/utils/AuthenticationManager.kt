@@ -22,29 +22,7 @@ import java.util.UUID
 class AuthenticationManager(val context: Context) {
     private val auth = Firebase.auth
 
-    private val web_client_id = "214989153058-rvv6lo0g34kqdmqbu5r37qq3he8fsr3p.apps.googleusercontent.com"
-
-    fun createAccountWithEmail(email: String, password: String): Flow<AuthResponse> = callbackFlow {
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                trySend(AuthResponse.Success)
-            } else {
-                trySend(AuthResponse.Error(task.exception?.message ?: "Unknown error"))
-            }
-        }
-        awaitClose()
-    }
-
-    fun loginWithEmail(email: String, password: String): Flow<AuthResponse> = callbackFlow {
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                trySend(AuthResponse.Success)
-            } else {
-                trySend(AuthResponse.Error(task.exception?.message ?: "Unknown error"))
-            }
-        }
-        awaitClose()
-    }
+    private val web_client_id = context.getString(R.string.web_client_id)
 
     private fun createNonce(): String {
         val rawNonce = UUID.randomUUID().toString()
