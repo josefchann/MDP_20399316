@@ -1,11 +1,17 @@
 package com.haw.mobiledeviceprogramming.presentation.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -18,7 +24,8 @@ import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 fun ProfileInfoCard(
     condition: String,
     date: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDelete: () -> Unit // Callback for delete action
 ) {
     Surface(
         modifier = modifier
@@ -29,19 +36,37 @@ fun ProfileInfoCard(
         tonalElevation = 0.5.dp,
         shadowElevation = 0.2.dp
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = condition,  // Use passed data
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = poppinsFontFamily
-            )
-            Text(
-                text = date,  // Use passed data
-                fontSize = 14.sp,
-                color = BluePrimary,
-                fontFamily = poppinsFontFamily
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f) // Make the text column take up available space
+            ) {
+                Text(
+                    text = condition,  // Use passed data
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    fontFamily = poppinsFontFamily
+                )
+                Text(
+                    text = date,  // Use passed data
+                    fontSize = 14.sp,
+                    color = BluePrimary,
+                    fontFamily = poppinsFontFamily
+                )
+            }
+            IconButton(
+                onClick = onDelete // Trigger the delete callback
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete, // Replace with desired icon
+                    contentDescription = "Delete", // Accessibility description
+                    tint = Color.Gray // Optional: Customize icon color
+                )
+            }
         }
     }
 }

@@ -87,22 +87,44 @@ class DoctorViewModel : ViewModel() {
             }
     }
 
-
-
-    // Get a specific doctor by index (wraps around if index exceeds list size)
-    fun getDoctorForIndex(index: Int): Doctor? {
-        return if (_doctors.value.isNotEmpty()) {
-            _doctors.value[index % _doctors.value.size] // Cycle through doctors if needed
-        } else {
-            null
-        }
-    }
-
     fun getDoctorById(id: Int): Doctor? {
         Log.d("DoctorViewModel", "Searching for doctor with ID: $id in list: ${_doctors.value}")
         return _doctors.value.find { it.id == id }
     }
 
+    fun deleteAppointment(appointmentId: Int, onSuccess: () -> Unit = {}, onError: (Exception) -> Unit = {}) {
+        firestore.collection("appointments")
+            .whereEqualTo("doctor.id", appointmentId) // Use the correct field path for the nested ID
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val updatedAppointments = _appointments.value.toMutableList() // Create a mutable copy of the current list
+
+                for (document in querySnapshot.documents) {
+                    // Remove the document reference
+                    document.reference.delete()
+                        .addOnSuccessListener {
+                            // Remove the corresponding appointment locally
+                            val appointmentToRemove = updatedAppointments.find {
+                                it.doctor.id == appointmentId
+                            }
+                            if (appointmentToRemove != null) {
+                                updatedAppointments.remove(appointmentToRemove)
+                                _appointments.value = updatedAppointments // Update the state flow
+                            }
+                            Log.d("DoctorViewModel", "Successfully deleted appointment with id: $appointmentId")
+                            onSuccess()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("DoctorViewModel", "Error deleting document: ${e.message}")
+                            onError(e)
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DoctorViewModel", "Error fetching appointments: ${e.message}")
+                onError(e)
+            }
+    }
 
 }
 

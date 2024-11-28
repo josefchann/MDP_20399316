@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.haw.mobiledeviceprogramming.presentation.components.SplashScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.MainScreen
 import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 import com.haw.mobiledeviceprogramming.ui.theme.MobileDeviceProgrammingTheme
@@ -22,12 +23,17 @@ class MainActivity : ComponentActivity() {
             MobileDeviceProgrammingTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    // Create UserViewModel
                     val userViewModel: UserViewModel = viewModel()
 
-                    NavHost(navController = navController, startDestination = "login") {
+                    NavHost(navController = navController, startDestination = "splash") {
+                        composable("splash") {
+                            SplashScreen {
+                                navController.navigate("login") {
+                                    popUpTo("splash") { inclusive = true }
+                                }
+                            }
+                        }
                         composable("login") {
-                            // Pass the viewModel to LoginScreen
                             LoginScreen(navController = navController, userViewModel = userViewModel)
                         }
                         composable("main") {
@@ -38,4 +44,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }

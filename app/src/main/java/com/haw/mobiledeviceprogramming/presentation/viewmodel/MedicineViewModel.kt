@@ -70,7 +70,7 @@ class MedicineViewModel : ViewModel() {
             }
     }
 
-    // Function to add a medicine to the database
+    // Function to add a medicine with a sequential ID to the database
     fun addMedicineToDatabase(
         medicineName: String,
         medicineUsage: String,
@@ -80,11 +80,15 @@ class MedicineViewModel : ViewModel() {
         onError: (Exception) -> Unit
     ) {
         try {
+            // Generate a sequential unique ID
+            val uniqueId = generateSequentialId()
+
             // Convert the incoming date from dd/MM/yyyy to yyyy-MM-dd
             val parsedDate = inputDateFormat.parse(restockDate) // Parse the input format
             val formattedDate = dbDateFormat.format(parsedDate) // Format to yyyy-MM-dd
 
             val medicine = hashMapOf(
+                "id" to uniqueId, // Add the unique ID to the document
                 "medicineName" to medicineName,
                 "medicineUsage" to medicineUsage,
                 "restockDate" to formattedDate,
@@ -92,7 +96,8 @@ class MedicineViewModel : ViewModel() {
             )
 
             db.collection("medicines")
-                .add(medicine)
+                .document(uniqueId) // Use the unique ID as the document ID
+                .set(medicine)
                 .addOnSuccessListener { onSuccess() }
                 .addOnFailureListener { exception -> onError(exception) }
         } catch (e: ParseException) {
@@ -100,5 +105,26 @@ class MedicineViewModel : ViewModel() {
             onError(e)
         }
     }
-}
 
+    // Function to delete a medicine by its unique ID
+    fun deleteMedicineById(medicineId: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        db.collection("medicines")
+            .document(medicineId) // Document reference using the unique ID
+            .delete()
+            .addOnSuccessListener {
+                Log.d("MedicineViewModel", "Medicine deleted successfully.")
+                onSuccess() // Notify success
+            }
+            .addOnFailureListener { exception ->
+                Log.e("MedicineViewModel", "Error deleting medicine: ${exception.message}")
+                onError(exception) // Notify error
+            }
+    }
+
+    // Function to generate a sequential ID based on timestamp
+    private fun generateSequentialId(): String {
+        val timestamp = System.currentTimeMillis() // Current timestamp
+        val randomPart = (1000..9999).random() // Random number for uniqueness
+        return "$timestamp-$randomPart"
+    }
+}

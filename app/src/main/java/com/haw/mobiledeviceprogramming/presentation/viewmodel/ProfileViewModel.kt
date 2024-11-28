@@ -2,6 +2,7 @@ package com.haw.mobiledeviceprogramming.presentation.viewmodel
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,7 +20,13 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     private val db = FirebaseFirestore.getInstance()
 
-    // Function to fetch profiles from Firestore
+    // Function to generate a sequential ID based on timestamp
+    private fun generateSequentialId(): String {
+        val timestamp = System.currentTimeMillis() // Current timestamp
+        val randomPart = (1000..9999).random() // Random number for uniqueness
+        return "$timestamp-$randomPart"
+    }
+
     fun fetchProfiles(userUuid: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -38,7 +45,14 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                                 }
                                 else -> ""
                             }
-                            profileList.add(mapOf("condition" to condition, "date" to date))
+                            val id = document.id // Fetch Firestore document ID
+                            profileList.add(
+                                mapOf(
+                                    "id" to id,          // Include the document ID
+                                    "condition" to condition,
+                                    "date" to date
+                                )
+                            )
                         }
                         _profiles.postValue(profileList)
                     }
@@ -52,21 +66,23 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
 
-
     // Function to add new profile info to Firestore
     fun addProfileInfo(medicalHistory: MedicalHistory, userUuid: String) {
+        val sequentialId = generateSequentialId()
         val profileData = hashMapOf(
+            "id" to sequentialId,
             "medicalCondition" to medicalHistory.medicalCondition,
-            "date" to medicalHistory.date, // Store the date as a String
-            "userUuid" to userUuid // Include the user UUID
+            "date" to medicalHistory.date,
+            "userUuid" to userUuid
         )
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 db.collection("medicalHistory")
-                    .add(profileData)
+                    .document(sequentialId) // Use the sequential ID as the document ID
+                    .set(profileData)
                     .addOnSuccessListener {
-                        fetchProfiles(userUuid) // Refresh profiles after successful addition, filtering by userUuid
+                        fetchProfiles(userUuid) // Refresh profiles after successful addition
                     }
                     .addOnFailureListener { e ->
                         Log.e("FirestoreError", "Error adding profile info: ", e)
@@ -77,8 +93,54 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun deleteProfileInfo(documentId: String, userUuid: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                db.collection("medicalHistory")
+                    .document(documentId)
+                    .delete()
+                    .addOnSuccessListener {
+                        // Log success
+                        Log.d("FirestoreSuccess", "Profile info deleted successfully.")
 
+                        // Show a Toast message
+                        viewModelScope.launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                getApplication(),
+                                "Item deleted successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
+                        // Refresh profiles after deletion
+                        fetchProfiles(userUuid)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("FirestoreError", "Error deleting profile info: ", e)
 
+                        // Optionally show a Toast for failure
+                        viewModelScope.launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                getApplication(),
+                                "Failed to delete item. Please try again.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+            } catch (e: Exception) {
+                Log.e("ViewModelError", "Unexpected error: ", e)
+
+                // Optionally show a Toast for unexpected errors
+                viewModelScope.launch(Dispatchers.Main) {
+                    Toast.makeText(
+                        getApplication(),
+                        "An unexpected error occurred. Please try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
 
 }
+

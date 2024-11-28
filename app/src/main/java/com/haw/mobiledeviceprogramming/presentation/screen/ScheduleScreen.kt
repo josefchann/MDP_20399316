@@ -1,6 +1,7 @@
 package com.haw.mobiledeviceprogramming.presentation.screen
 
 import DoctorViewModel
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -90,9 +91,21 @@ fun ScheduleScreen(
                     items(appointments) { appointment ->
                         ScheduleDoctorCard(
                             doctor = appointment.doctor,
-                            appointment = appointment
+                            appointment = appointment,
+                            onDeleteClick = { appointmentId ->
+                                viewModel.deleteAppointment(
+                                    appointmentId = appointmentId,
+                                    onSuccess = {
+//                                        Toast.makeText(context, "Appointment deleted successfully.", Toast.LENGTH_SHORT).show()
+                                    },
+                                    onError = {
+//                                        Toast.makeText(context, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
                         )
                     }
+
                 }
             }
         }

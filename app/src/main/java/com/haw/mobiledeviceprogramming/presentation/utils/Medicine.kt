@@ -6,6 +6,7 @@ data class Medicine(
     val medicineName: String = "",
     val medicineUsage: String = "",
     val restockDate: String = "",
-    val imageRes: Int = R.drawable.img_pills
+    val imageRes: Int = R.drawable.img_pills,
+    val id: String = ""
 )
 

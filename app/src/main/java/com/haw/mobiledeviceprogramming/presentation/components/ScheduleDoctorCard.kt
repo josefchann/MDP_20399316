@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection.Companion.Content
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
 import com.haw.mobiledeviceprogramming.ui.theme.TextColorTitle
@@ -115,7 +116,107 @@ fun ScheduleDoctorCard(
             }
         }
     }
+}@Composable
+fun ScheduleDoctorCard(
+    doctor: Doctor, // Pass the doctor object directly
+    modifier: Modifier = Modifier,
+    appointment: Appointment,
+    onDetailClick: (Doctor) -> Unit = {}, // Optional callback for navigation or details
+    onDeleteClick: (Int) -> Unit = {} // Callback for delete action
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = Color.White,
+        tonalElevation = 0.5.dp,
+        shadowElevation = 0.2.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row {
+                    Image(
+                        modifier = Modifier.size(48.dp),
+                        painter = painterResource(id = doctor.imageRes), // Should be a valid drawable ID
+                        contentDescription = "Image of ${doctor.name}"
+                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .weight(1f),
+                    ) {
+                        Text(
+                            text = doctor.name,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = TextColorTitle
+                        )
+
+                        Text(
+                            text = doctor.specialty,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light,
+                            color = PurpleGrey
+                        )
+                    }
+                }
+
+            }
+
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+                    .height(1.dp)
+                    .alpha(0.1f),
+                color = Color.Gray
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                ScheduleContent(
+                    icon = R.drawable.ic_date,
+                    title = appointment.appointmentDate,
+                    contentColor = PurpleGrey
+                )
+
+                ScheduleContent(
+                    icon = R.drawable.ic_clock,
+                    title = doctor.openingTime,
+                    contentColor = PurpleGrey
+                )
+            }
+
+
+            // Add Delete Button
+            Button(
+                onClick = { onDeleteClick(appointment.doctor.id) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEFEFEF), // Light gray for a subtle look
+                    contentColor = Color.Black // Black text for contrast
+                ),
+                shape = RoundedCornerShape(8.dp) // Slightly rounded corners
+            ) {
+                Text(
+                    text = "Cancel Appointment",
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 12.sp
+                )
+            }
+        }
+    }
 }
+
 
 
 @Composable

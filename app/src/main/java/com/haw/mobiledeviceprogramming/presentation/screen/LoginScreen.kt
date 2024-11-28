@@ -1,7 +1,6 @@
 package com.haw.mobiledeviceprogramming
 
-import android.content.Intent
-import android.util.Log
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -72,69 +71,69 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Please fill in the form to continue",
+            text = "Please sign-in to continue",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { newValue -> email = newValue },
-            placeholder = { Text(text = "Email") },
-            leadingIcon = { Icon(imageVector = Icons.Rounded.Email, contentDescription = null) },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { newValue -> password = newValue },
-            placeholder = { Text(text = "Password") },
-            leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = null) },
-            visualTransformation = PasswordVisualTransformation(),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        Button(
-            onClick = {
-                isLoading = true
-                authenticationManager.loginWithEmail(email, password)
-                    .onEach { response ->
-                        handleAuthResponse(response)
-                        isLoading = false
-                    }
-                    .launchIn(coroutineScope)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
-            } else {
-                Text(
-                    text = "Sign-in",
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "or continue with")
-        }
+//        OutlinedTextField(
+//            value = email,
+//            onValueChange = { newValue -> email = newValue },
+//            placeholder = { Text(text = "Email") },
+//            leadingIcon = { Icon(imageVector = Icons.Rounded.Email, contentDescription = null) },
+//            shape = RoundedCornerShape(16.dp),
+//            modifier = Modifier.fillMaxWidth()
+//        )
+//
+//        Spacer(modifier = Modifier.height(20.dp))
+//
+//        OutlinedTextField(
+//            value = password,
+//            onValueChange = { newValue -> password = newValue },
+//            placeholder = { Text(text = "Password") },
+//            leadingIcon = { Icon(imageVector = Icons.Rounded.Lock, contentDescription = null) },
+//            visualTransformation = PasswordVisualTransformation(),
+//            shape = RoundedCornerShape(16.dp),
+//            modifier = Modifier.fillMaxWidth()
+//        )
+//
+//        Spacer(modifier = Modifier.height(30.dp))
+//
+//        Button(
+//            onClick = {
+//                isLoading = true
+//                authenticationManager.loginWithEmail(email, password)
+//                    .onEach { response ->
+//                        handleAuthResponse(response)
+//                        isLoading = false
+//                    }
+//                    .launchIn(coroutineScope)
+//            },
+//            modifier = Modifier.fillMaxWidth(),
+//            enabled = !isLoading
+//        ) {
+//            if (isLoading) {
+//                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+//            } else {
+//                Text(
+//                    text = "Sign-in",
+//                    fontWeight = FontWeight.Bold,
+//                    style = MaterialTheme.typography.titleMedium,
+//                    modifier = Modifier.padding(vertical = 4.dp)
+//                )
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(10.dp))
+//
+//        Box(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Text(text = "or continue with")
+//        }
 
         OutlinedButton(
             onClick = {

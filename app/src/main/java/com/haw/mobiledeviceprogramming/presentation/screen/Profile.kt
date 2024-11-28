@@ -1,6 +1,7 @@
 package com.haw.mobiledeviceprogramming.presentation.screen
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -87,22 +88,34 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                 )
             }
         } else {
-
             // Profile Information Section
             LazyColumn(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(profiles) { profile ->
-                    ProfileInfoCard(
-                        condition = profile["condition"] as String,
-                        date = profile["date"] as String
-                    )
+                    val documentId = profile["id"] as? String // Safely cast to String or null
+                    if (documentId != null) {
+                        ProfileInfoCard(
+                            condition = profile["condition"] as? String
+                                ?: "Unknown Condition", // Fallback for null values
+                            date = profile["date"] as? String
+                                ?: "Unknown Date",                // Fallback for null values
+                            onDelete = {
+                                if (userUuid != null) {
+                                    profileViewModel.deleteProfileInfo(documentId, userUuid)
+                                }
+                            },
+                        )
+                    } else {
+                        // Log or handle the missing `id` case
+                        Log.e("ProfileScreen", "Document ID is missing or null")
+                    }
                 }
             }
-
         }
     }
+
     // Floating Action Button for adding new profile info
     Box(
         modifier = Modifier
@@ -125,12 +138,13 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
             onSubmit = { medicalHistory ->
                 if (userUuid != null) {
                     profileViewModel.addProfileInfo(medicalHistory, userUuid)
-                } // Add MedicalHistory object to Firestore
+                }
                 openDialog.value = false // Close the dialog after submission
             }
         )
     }
 }
+
 
 
 @Composable

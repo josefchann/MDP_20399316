@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.haw.mobiledeviceprogramming.presentation.utils.Medicine
 import com.haw.mobiledeviceprogramming.presentation.viewmodel.MedicineViewModel
 import java.util.Calendar
 
@@ -39,6 +40,8 @@ fun MedicineScreen(
     viewModel: MedicineViewModel = viewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) } // Flag for delete confirmation
+    var medicineToDelete by remember { mutableStateOf<Medicine?>(null) } // Medicine to delete
     val userUuid = FirebaseAuth.getInstance().currentUser?.uid
     val medicines by viewModel.medicines.collectAsState() // Observing medicines from ViewModel
 
@@ -88,6 +91,11 @@ fun MedicineScreen(
                         medicine = medicine,
                         onDetailClick = { selectedMedicine ->
                             println("Detail clicked for: ${selectedMedicine.medicineName}")
+                        },
+                        onDeleteClick = { selectedMedicine ->
+                            // Show delete confirmation dialog
+                            medicineToDelete = selectedMedicine
+                            showDeleteDialog = true
                         }
                     )
                 }
@@ -135,9 +143,50 @@ fun MedicineScreen(
             }
         )
     }
+
+    // Delete Medicine Confirmation Dialog
+    if (showDeleteDialog && medicineToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Medicine", fontFamily = poppinsFontFamily, fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    text = "Are you sure you want to delete ${medicineToDelete!!.medicineName}?",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        medicineToDelete?.id?.let {
+                            viewModel.deleteMedicineById(
+                                medicineId = it,
+                                onSuccess = {
+                                    showDeleteDialog = false
+                                    println("Medicine deleted successfully!")
+                                    // Refresh the list after deleting the medicine
+                                    viewModel.fetchMedicinesForUser(userUuid!!)
+                                },
+                                onError = { exception ->
+                                    println("Error deleting medicine: ${exception.message}")
+                                }
+                            )
+                        }
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
-
-
 
 
 @Composable
