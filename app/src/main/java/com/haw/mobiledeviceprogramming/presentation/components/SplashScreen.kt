@@ -22,7 +22,7 @@ import com.haw.mobiledeviceprogramming.R
 @Composable
 fun SplashScreen(onNavigateToLogin: () -> Unit) {
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(3000) // Delay for 3 seconds
+        kotlinx.coroutines.delay(3000)
         onNavigateToLogin()
     }
 
@@ -35,12 +35,11 @@ fun SplashScreen(onNavigateToLogin: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Add an image at the top
             Image(
-                painter = painterResource(id = R.drawable.img_logo), // Replace 'your_logo' with your image resource name
+                painter = painterResource(id = R.drawable.img_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
-                    .size(360.dp) // Adjust the size of the image
+                    .size(500.dp) // Adjust the size of the image
             )
 
         }

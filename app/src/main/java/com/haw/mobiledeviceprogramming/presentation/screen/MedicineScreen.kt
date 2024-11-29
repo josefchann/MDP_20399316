@@ -28,6 +28,7 @@ import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.haw.mobiledeviceprogramming.presentation.utils.Medicine
@@ -40,10 +41,10 @@ fun MedicineScreen(
     viewModel: MedicineViewModel = viewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) } // Flag for delete confirmation
-    var medicineToDelete by remember { mutableStateOf<Medicine?>(null) } // Medicine to delete
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var medicineToDelete by remember { mutableStateOf<Medicine?>(null) }
     val userUuid = FirebaseAuth.getInstance().currentUser?.uid
-    val medicines by viewModel.medicines.collectAsState() // Observing medicines from ViewModel
+    val medicines by viewModel.medicines.collectAsState()
 
     // Fetch medicines for the current user when the screen is composed
     LaunchedEffect(userUuid) {
@@ -192,11 +193,12 @@ fun MedicineScreen(
 @Composable
 fun AddMedicineDialog(
     onDismiss: () -> Unit,
-    onSubmit: (medicineName: String, medicineUsage: String, restockDate: String ) -> Unit
+    onSubmit: (medicineName: String, medicineUsage: Int, restockDate: String ) -> Unit
 ) {
     var medicineName by remember { mutableStateOf(TextFieldValue("")) }
     var medicineUsage by remember { mutableStateOf(TextFieldValue("")) }
     var restockDate by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -235,10 +237,20 @@ fun AddMedicineDialog(
 
                 // Medicine Usage Input
                 Column {
-                    Text("Medicine Usage", color = Color.Gray, fontSize = 14.sp)
+                    Text("Times Per Day", color = Color.Gray, fontSize = 14.sp)
                     BasicTextField(
                         value = medicineUsage,
-                        onValueChange = { medicineUsage = it },
+                        onValueChange = { input ->
+                            // Check if all characters in input are digits
+                            if (input.text.all { it.isDigit() }) {
+                                medicineUsage = input // Keep the selection intact
+                                errorMessage = null
+                            } else {
+                                // Keep the current valid text and position the cursor at the end
+                                medicineUsage = medicineUsage.copy(selection = TextRange(medicineUsage.text.length))
+                                errorMessage = "Only whole numbers are allowed."
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
@@ -246,6 +258,7 @@ fun AddMedicineDialog(
                         textStyle = TextStyle(fontSize = 16.sp)
                     )
                 }
+
 
                 // Restock Date Selector
                 Column {
@@ -267,7 +280,7 @@ fun AddMedicineDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onSubmit(medicineName.text, medicineUsage.text, restockDate) }) {
+            Button(onClick = { onSubmit(medicineName.text, medicineUsage.text.toInt(), restockDate) }) {
                 Text("Add")
             }
         },

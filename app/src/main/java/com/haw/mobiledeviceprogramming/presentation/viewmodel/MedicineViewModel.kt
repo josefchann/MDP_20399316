@@ -73,7 +73,7 @@ class MedicineViewModel : ViewModel() {
     // Function to add a medicine with a sequential ID to the database
     fun addMedicineToDatabase(
         medicineName: String,
-        medicineUsage: String,
+        medicineUsage: Int,
         restockDate: String,
         userUuid: String,
         onSuccess: () -> Unit,
@@ -90,7 +90,7 @@ class MedicineViewModel : ViewModel() {
             val medicine = hashMapOf(
                 "id" to uniqueId, // Add the unique ID to the document
                 "medicineName" to medicineName,
-                "medicineUsage" to medicineUsage,
+                "medicineUsage" to medicineUsage.toInt(),
                 "restockDate" to formattedDate,
                 "userUuid" to userUuid
             )

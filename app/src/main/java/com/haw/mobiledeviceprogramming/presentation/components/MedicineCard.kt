@@ -58,23 +58,18 @@ fun MedicineCard(
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically),
                     ) {
                         Text(
                             text = medicine.medicineName,
                             fontFamily = poppinsFontFamily,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
+                            fontSize = 25.sp,
                             color = TextColorTitle
                         )
 
-                        Text(
-                            text = medicine.medicineUsage,
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Light,
-                            fontSize = 14.sp,
-                            color = PurpleGrey
-                        )
                     }
                 }
 
@@ -113,7 +108,7 @@ fun MedicineCard(
                         color = PurpleGrey
                     )
                     Text(
-                        text = medicine.medicineUsage,
+                        text = "${medicine.medicineUsage} times per day",
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp,

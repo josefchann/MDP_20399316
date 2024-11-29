@@ -57,10 +57,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import coil.compose.rememberAsyncImagePainter
-import com.haw.mobiledeviceprogramming.presentation.crud.Appointment
-import com.haw.mobiledeviceprogramming.presentation.utils.sampleDate
-import com.haw.mobiledeviceprogramming.presentation.utils.sampleTime
 import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 
 @Composable
@@ -68,23 +64,20 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: DoctorViewModel = viewModel(),
-    userViewModel: UserViewModel = viewModel() // Use the same UserViewModel instance here
+    userViewModel: UserViewModel = viewModel()
 ) {
     Surface(
         modifier = modifier.padding(top = 42.dp, start = 16.dp, end = 16.dp)
     ) {
         Column {
-            // Header Content
             HeaderContent(
-                userViewModel = userViewModel // Pass UserViewModel directly here
+                userViewModel = userViewModel
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-//            // Schedule Content
             ScheduleContent()
 
-            // Search Bar
             SearchableDoctorList(navController = navController, viewModel = viewModel)
         }
     }
@@ -130,29 +123,13 @@ private fun HeaderContent(
     ) {
         Column {
             Text(
-                text = "Hello,",
+                text = "Hey there!",
                 fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.W400,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
                 color = PurpleGrey
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Welcome Back",
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-        }
-
-        if (user.profilePictureUrl.isNotEmpty()) {
-            Image(
-                modifier = Modifier.size(56.dp),
-                painter = painterResource(id = R.drawable.img_header_content),
-//                painter = rememberAsyncImagePainter(user.profilePictureUrl),
-                contentDescription = "User Profile Picture"
-            )
         }
     }
 }
