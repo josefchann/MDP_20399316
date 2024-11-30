@@ -19,4 +19,9 @@ class UserViewModel : ViewModel() {
         Log.d("UserViewModel", "Updated user: $user")
     }
 
+    fun signOut() {
+        Log.d("UserViewModel", "Signing out user: ${user.name}")
+        user = User() // Reset to default User values
+        Log.d("UserViewModel", "User signed out. Current user: $user")
+    }
 }

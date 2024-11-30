@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
-import com.haw.mobiledeviceprogramming.presentation.screen.HomeScreenWithNavigation
+import com.haw.mobiledeviceprogramming.presentation.screen.HomeScreenNavigation
 import com.haw.mobiledeviceprogramming.presentation.screen.ScheduleScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.MedicineScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.ProfileScreen
@@ -23,7 +23,7 @@ fun Navigation(
         startDestination = startDestination
     ) {
         composable(route = BottomNavItemScreen.Home.route) {
-            HomeScreenWithNavigation()
+            HomeScreenNavigation()
         }
         composable(route = BottomNavItemScreen.Schedule.route) {
             ScheduleScreen()

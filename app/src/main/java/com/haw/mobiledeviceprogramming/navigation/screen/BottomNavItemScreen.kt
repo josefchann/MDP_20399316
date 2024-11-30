@@ -33,5 +33,4 @@ sealed class BottomNavItemScreen(val route: String, val icon: Int, val title: St
         icon = R.drawable.ic_bottom_profile,
         title = "Doctor Details"
     )
-
 }

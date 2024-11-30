@@ -2,14 +2,12 @@ package com.haw.mobiledeviceprogramming.presentation.screen
 
 import com.haw.mobiledeviceprogramming.presentation.components.DoctorDetailsScreen
 import DoctorViewModel
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,9 +17,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,6 +59,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.haw.mobiledeviceprogramming.LoginScreen
 import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
 
 @Composable
@@ -71,21 +74,29 @@ fun HomeScreen(
     ) {
         Column {
             HeaderContent(
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                onSignOut = {
+                    // Handle sign-out logic
+                    userViewModel.signOut() // Call your ViewModel's sign-out method
+                    navController.navigate("login") { // Navigate to login screen
+                        popUpTo(0) // Clear backstack
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             ScheduleContent()
 
-            SearchableDoctorList(navController = navController, viewModel = viewModel)
+            DoctorList(navController = navController, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun HomeScreenWithNavigation() {
+fun HomeScreenNavigation() {
     val navController = rememberNavController()
+    val userViewModel = UserViewModel()
 
     NavHost(
         navController = navController, startDestination = "doctor_list"
@@ -94,6 +105,13 @@ fun HomeScreenWithNavigation() {
         composable("doctor_list") {
             // Use the same UserViewModel instance here
             HomeScreen(navController = navController)
+        }
+
+        composable("login") {
+            LoginScreen(
+                navController = navController,
+                userViewModel = userViewModel
+            )
         }
 
         // Details Screen
@@ -109,16 +127,16 @@ fun HomeScreenWithNavigation() {
 
 @Composable
 private fun HeaderContent(
-    modifier: Modifier = Modifier, userViewModel: UserViewModel
+    modifier: Modifier = Modifier,
+    userViewModel: UserViewModel,
+    onSignOut: () -> Unit // Callback to handle sign-out action
 ) {
-    val user = userViewModel.user
-
-    // Debugging Log to check if the user data is being updated
-    Log.d("HeaderContent", "User Data: ${user.name}, ${user.profilePictureUrl}")
+//    val user = userViewModel.user
+    var isMenuExpanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
@@ -129,7 +147,38 @@ private fun HeaderContent(
                 fontSize = 20.sp,
                 color = PurpleGrey
             )
+        }
 
+        // Three-dot menu button
+        Box(
+            modifier = Modifier.align(Alignment.CenterVertically)
+        ) {
+            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Menu Icon"
+                )
+            }
+
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false },
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "Sign Out",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    onClick = {
+                        isMenuExpanded = false
+                        onSignOut()
+                    }
+                )
+            }
         }
     }
 }
@@ -139,7 +188,6 @@ private fun ScheduleContent(
     modifier: Modifier = Modifier,
     viewModel: DoctorViewModel = viewModel(),
 ) {
-    val doctors by viewModel.doctors.collectAsState()
     val appointments by viewModel.appointments.collectAsState()
 
     // Trigger fetching of doctors and appointments
@@ -274,7 +322,7 @@ private fun ScheduleContent(
 
 
 @Composable
-fun SearchableDoctorList(
+fun DoctorList(
     navController: NavController, viewModel: DoctorViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
