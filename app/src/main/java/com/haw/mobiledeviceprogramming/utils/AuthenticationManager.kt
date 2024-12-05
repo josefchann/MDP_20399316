@@ -11,7 +11,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
+import com.haw.mobiledeviceprogramming.viewmodel.UserViewModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -36,7 +36,7 @@ class AuthenticationManager(val context: Context) {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(web_client_id)
-            .setAutoSelectEnabled(false) // Disabling auto select
+            .setAutoSelectEnabled(false)
             .setNonce(createNonce())
             .build()
 

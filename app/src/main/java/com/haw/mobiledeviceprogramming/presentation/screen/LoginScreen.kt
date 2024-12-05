@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
+import com.haw.mobiledeviceprogramming.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ fun LoginScreen(
     fun handleAuthResponse(response: AuthResponse) {
         when (response) {
             is AuthResponse.Success -> {
-                navController.navigate("main") // Navigate to Home
+                navController.navigate("main")
                 Toast.makeText(context, "Login Success!", Toast.LENGTH_LONG).show()
             }
             is AuthResponse.Error -> {
@@ -54,8 +54,8 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             logoOffsetY.animateTo(
-                targetValue = 0f, // Move logo to its final position
-                animationSpec = tween(durationMillis = 2000) // 2-second animation
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 2000)
             )
         }
     }
@@ -72,9 +72,9 @@ fun LoginScreen(
                 painter = painterResource(id = R.drawable.img_logo), // Replace with Firebase logo
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .offset(y = logoOffsetY.value.dp) // Apply animation offset
+                    .offset(y = logoOffsetY.value.dp)
                     .size(500.dp)
-                    .align(Alignment.Center) // Align the logo at the top-center
+                    .align(Alignment.Center)
                     .padding(bottom = 50.dp)
             )
 
@@ -83,7 +83,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 150.dp), // Push the button upward to 3/4 position
+                    .padding(bottom = 150.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
@@ -98,17 +98,17 @@ fun LoginScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
-                        .height(56.dp) // Adjust button width and height
+                        .height(56.dp)
                         .border(
-                            width = 1.dp, // Outline thickness
-                            color = MaterialTheme.colorScheme.onSurface, // Outline color
-                            shape = RoundedCornerShape(12.dp) // Match the button's corner radius
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            shape = RoundedCornerShape(12.dp)
                         ),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surface, // White background for the button
-                        contentColor = MaterialTheme.colorScheme.onSurface // Black text color
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    shape = RoundedCornerShape(32.dp), // Button's corner radius
+                    shape = RoundedCornerShape(32.dp),
                     enabled = !isLoading
                 ) {
                     Row(
@@ -116,7 +116,7 @@ fun LoginScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.img_google), // Replace with Google logo
+                            painter = painterResource(id = R.drawable.img_google),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
                         )

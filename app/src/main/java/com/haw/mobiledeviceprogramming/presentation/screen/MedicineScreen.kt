@@ -31,8 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.haw.mobiledeviceprogramming.presentation.utils.Medicine
-import com.haw.mobiledeviceprogramming.presentation.viewmodel.MedicineViewModel
+import com.haw.mobiledeviceprogramming.utils.Medicine
+import com.haw.mobiledeviceprogramming.viewmodel.MedicineViewModel
 import java.util.Calendar
 
 @Composable
@@ -90,9 +90,6 @@ fun MedicineScreen(
                 items(medicines) { medicine ->
                     MedicineCard(
                         medicine = medicine,
-                        onDetailClick = { selectedMedicine ->
-                            println("Detail clicked for: ${selectedMedicine.medicineName}")
-                        },
                         onDeleteClick = { selectedMedicine ->
                             // Show delete confirmation dialog
                             medicineToDelete = selectedMedicine
@@ -243,7 +240,7 @@ fun AddMedicineDialog(
                         onValueChange = { input ->
                             // Check if all characters in input are digits
                             if (input.text.all { it.isDigit() }) {
-                                medicineUsage = input // Keep the selection intact
+                                medicineUsage = input
                                 errorMessage = null
                             } else {
                                 // Keep the current valid text and position the cursor at the end

@@ -7,6 +7,7 @@ import android.app.DatePickerDialog
 import android.icu.util.Calendar
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -43,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
@@ -57,13 +60,11 @@ import com.haw.mobiledeviceprogramming.ui.theme.Orange
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
 import com.haw.mobiledeviceprogramming.ui.theme.TextColorTitle
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
-import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
-import com.haw.mobiledeviceprogramming.presentation.utils.sampleRating
+import com.haw.mobiledeviceprogramming.utils.Doctor
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.haw.mobiledeviceprogramming.presentation.crud.Appointment
-import com.haw.mobiledeviceprogramming.presentation.crud.createAppointment
+import com.haw.mobiledeviceprogramming.viewmodel.Appointment
+import com.haw.mobiledeviceprogramming.viewmodel.createAppointment
 import com.haw.mobiledeviceprogramming.ui.theme.DarkBlue
 
 @Composable
@@ -84,9 +85,12 @@ fun NearDoctorCard(
         ) {
             Row {
                 Image(
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .border(0.5.dp, Color.Gray, CircleShape),
                     painter = painterResource(id = doctor.imageRes),
-                    contentDescription = "Image of ${doctor.name}"
+                    contentDescription = "Image of ${doctor.name}",
                 )
 
                 Column(
@@ -125,13 +129,13 @@ fun NearDoctorCard(
             ) {
                 BottomItem(
                     icon = R.drawable.ic_review,
-                    title = sampleRating.random().rating,
+                    title = "Rated at ${doctor.rating}",
                     color = Orange
                 )
 
                 BottomItem(
                     icon = R.drawable.ic_clock,
-                    title = "Opens at ${doctor.openingTime}", // Hardcoded for now
+                    title = "Opens at ${doctor.openingTime}",
                     color = BluePrimary
                 )
             }
@@ -143,12 +147,13 @@ fun NearDoctorCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Trigger bottom sheet
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF63B4FF).copy(alpha = 0.1f)),
-                    onClick = { showBottomSheet.value = true } // Trigger bottom sheet
+                    onClick = { showBottomSheet.value = true }
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -225,8 +230,8 @@ fun DoctorDetailsBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = DarkBlue, // Set your custom color here
-                        contentColor = Color.White    // Text color for contrast
+                        containerColor = DarkBlue,
+                        contentColor = Color.White
                     )
                 ) {
                     Text("Request Appointment", color = Color.White)
@@ -287,7 +292,7 @@ fun AppointmentDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = null, // Remove default title
+        title = null,
         text = {
             Column(
                 modifier = Modifier
@@ -296,9 +301,8 @@ fun AppointmentDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Icon
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_date), // Replace with your icon resource
+                    painter = painterResource(id = R.drawable.ic_date),
                     contentDescription = "Appointment Icon",
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.primary
@@ -368,7 +372,7 @@ fun AppointmentDialog(
                                     appointment = appointment,
                                     onSuccess = {
                                         Toast.makeText(context, "Appointment confirmed!", Toast.LENGTH_SHORT).show()
-                                        onDismiss() // Close the dialog
+                                        onDismiss()
                                     },
                                     onFailure = { exception ->
                                         Toast.makeText(context, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
@@ -376,7 +380,6 @@ fun AppointmentDialog(
                                 )
                             } else {
                                 println("Error: User not signed in.")
-                                // Handle this scenario, e.g., redirect to sign-in
                             }
                         } else {
                             println("Please select a date first")
@@ -384,7 +387,7 @@ fun AppointmentDialog(
                     },
                     enabled = !selectedDate.isNullOrEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF0353A4), // Dark Blue
+                        containerColor = Color(0xFF0353A4),
                         contentColor = Color.White
                     )
                 ) {
@@ -393,7 +396,7 @@ fun AppointmentDialog(
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(16.dp), // Rounded corners for the dialog
+        shape = RoundedCornerShape(16.dp),
         tonalElevation = 8.dp
     )
 }
@@ -423,9 +426,3 @@ private fun BottomItem(modifier: Modifier = Modifier, icon: Int, title: String, 
         )
     }
 }
-
-//@Preview
-//@Composable
-//private fun NearDoctorCardPreview() {
-//    NearDoctorCard()
-//}

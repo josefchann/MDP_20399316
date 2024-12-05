@@ -1,4 +1,4 @@
-package com.haw.mobiledeviceprogramming.presentation.viewmodel
+package com.haw.mobiledeviceprogramming.viewmodel
 
 import android.app.Application
 import android.util.Log
@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.haw.mobiledeviceprogramming.presentation.utils.MedicalHistory
+import com.haw.mobiledeviceprogramming.utils.MedicalHistory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -22,8 +22,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     // Function to generate a sequential ID based on timestamp
     private fun generateSequentialId(): String {
-        val timestamp = System.currentTimeMillis() // Current timestamp
-        val randomPart = (1000..9999).random() // Random number for uniqueness
+        val timestamp = System.currentTimeMillis()
+        val randomPart = (1000..9999).random()
         return "$timestamp-$randomPart"
     }
 
@@ -31,7 +31,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 db.collection("medicalHistory")
-                    .whereEqualTo("userUuid", userUuid) // Filter by user UUID
+                    .whereEqualTo("userUuid", userUuid)
                     .get()
                     .addOnSuccessListener { result ->
                         val profileList = mutableListOf<Map<String, Any>>()
@@ -79,10 +79,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 db.collection("medicalHistory")
-                    .document(sequentialId) // Use the sequential ID as the document ID
+                    .document(sequentialId)
                     .set(profileData)
                     .addOnSuccessListener {
-                        fetchProfiles(userUuid) // Refresh profiles after successful addition
+                        fetchProfiles(userUuid)
                     }
                     .addOnFailureListener { e ->
                         Log.e("FirestoreError", "Error adding profile info: ", e)

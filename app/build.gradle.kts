@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.junit.junit)
     val credentialsManagerVersion = "1.5.0-alpha05"
     implementation("androidx.credentials:credentials:$credentialsManagerVersion")
     implementation ("com.google.android.gms:play-services-auth:20.4.0'")
@@ -80,7 +81,10 @@ dependencies {
     implementation(platform(libs.firebase.bom.v3330))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth.ktx)
-    testImplementation(libs.junit)
+
+    testImplementation (libs.mockk)
+    testImplementation (libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

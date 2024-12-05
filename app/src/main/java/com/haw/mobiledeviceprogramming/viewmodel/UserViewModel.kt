@@ -1,4 +1,4 @@
-package com.haw.mobiledeviceprogramming.presentation.viewmodel
+package com.haw.mobiledeviceprogramming.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.*

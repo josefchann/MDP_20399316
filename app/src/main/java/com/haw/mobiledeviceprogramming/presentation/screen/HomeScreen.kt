@@ -3,6 +3,7 @@ package com.haw.mobiledeviceprogramming.presentation.screen
 import com.haw.mobiledeviceprogramming.presentation.components.DoctorDetailsScreen
 import DoctorViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -39,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -60,7 +63,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.haw.mobiledeviceprogramming.LoginScreen
-import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
+import com.haw.mobiledeviceprogramming.viewmodel.UserViewModel
 
 @Composable
 fun HomeScreen(
@@ -73,21 +76,23 @@ fun HomeScreen(
         modifier = modifier.padding(top = 42.dp, start = 16.dp, end = 16.dp)
     ) {
         Column {
+            // Header section with user greeting and sign-out functionality
             HeaderContent(
                 userViewModel = userViewModel,
                 onSignOut = {
-                    // Handle sign-out logic
-                    userViewModel.signOut() // Call your ViewModel's sign-out method
-                    navController.navigate("login") { // Navigate to login screen
-                        popUpTo(0) // Clear backstack
+                    userViewModel.signOut()
+                    navController.navigate("login") {
+                        popUpTo(0)
                     }
                 }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Section for displaying user appointments
             ScheduleContent()
 
+            // Section for listing doctors
             DoctorList(navController = navController, viewModel = viewModel)
         }
     }
@@ -101,12 +106,12 @@ fun HomeScreenNavigation() {
     NavHost(
         navController = navController, startDestination = "doctor_list"
     ) {
-        // List Screen
+        // Screen for listing doctors
         composable("doctor_list") {
-            // Use the same UserViewModel instance here
             HomeScreen(navController = navController)
         }
 
+        // Screen for user login
         composable("login") {
             LoginScreen(
                 navController = navController,
@@ -114,7 +119,7 @@ fun HomeScreenNavigation() {
             )
         }
 
-        // Details Screen
+        // Screen for displaying doctor details
         composable(
             route = "doctor_details/{id}",
             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -129,9 +134,8 @@ fun HomeScreenNavigation() {
 private fun HeaderContent(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel,
-    onSignOut: () -> Unit // Callback to handle sign-out action
+    onSignOut: () -> Unit
 ) {
-//    val user = userViewModel.user
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     Row(
@@ -149,28 +153,30 @@ private fun HeaderContent(
             )
         }
 
-        // Three-dot menu button
+        // Dropdown menu for user options (e.g., sign-out)
         Box(
             modifier = Modifier.align(Alignment.CenterVertically)
         ) {
             IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Menu Icon"
+                    contentDescription = "Menu Icon",
                 )
             }
 
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false },
-                modifier = Modifier.align(Alignment.TopEnd)
+                modifier = Modifier.clip(RoundedCornerShape(20.dp))
             ) {
                 DropdownMenuItem(
                     text = {
                         Text(
                             text = "Sign Out",
                             fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Red,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         )
                     },
                     onClick = {
@@ -190,18 +196,17 @@ private fun ScheduleContent(
 ) {
     val appointments by viewModel.appointments.collectAsState()
 
-    // Trigger fetching of doctors and appointments
+    // Fetch appointments and doctors when this composable is launched
     LaunchedEffect(Unit) {
         viewModel.fetchDoctors()
         viewModel.fetchUserAppointmentsAndDoctors()
     }
 
-    // Get a random appointment or show loading state
+    // Display a random appointment or a placeholder message if none exist
     val appointment = if (appointments.isNotEmpty()) appointments.random() else null
 
-    // Conditional rendering based on appointment status
     if (appointment != null) {
-        // Display the upcoming appointment details
+        // Card showing details of an upcoming appointment
         Surface(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -209,17 +214,13 @@ private fun ScheduleContent(
             tonalElevation = 1.dp,
             shadowElevation = 2.dp
         ) {
-            Column(
-                modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
-            ) {
+            Column(modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)) {
                 Text(
                     text = "Your Upcoming Appointment",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold, color = Color.White
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 6.dp), // Adds spacing below the header
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
                     textAlign = TextAlign.Start
                 )
 
@@ -228,27 +229,28 @@ private fun ScheduleContent(
                         .fillMaxWidth()
                         .padding(vertical = 10.dp)
                         .height(1.dp)
-                        .alpha(0.2f), color = Color.White
+                        .alpha(0.2f),
+                    color = Color.White
                 )
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                        .padding(top = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // Doctor's image
                     Image(
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .border(0.5.dp, Color.Gray, CircleShape),
                         painter = painterResource(id = appointment.doctor.imageRes),
-                        contentDescription = "Image Doctor"
+                        contentDescription = "Doctor Image"
                     )
 
+                    // Doctor's name and specialty
                     Column(
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                            .weight(1f)
+                        modifier = Modifier.padding(start = 12.dp).weight(1f)
                     ) {
                         Text(
                             text = appointment.doctor.name,
@@ -267,14 +269,13 @@ private fun ScheduleContent(
                 }
 
                 Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
                         .height(1.dp)
-                        .alpha(0.2f), color = Color.White
+                        .alpha(0.2f),
+                    color = Color.White
                 )
 
-                // Schedule Time Content
+                // Display appointment date and time
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -294,16 +295,14 @@ private fun ScheduleContent(
             }
         }
     } else {
-        // Show a "No upcoming appointments" placeholder as a card
+        // Placeholder for when no appointments exist
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
+            modifier = Modifier.fillMaxWidth().height(150.dp),
             shape = RoundedCornerShape(12.dp),
             color = Color(0xFFF5F5F5)
         ) {
             Box(
-                modifier = Modifier.padding(24.dp), // Add padding inside the card
+                modifier = Modifier.padding(24.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -319,8 +318,6 @@ private fun ScheduleContent(
     }
 }
 
-
-
 @Composable
 fun DoctorList(
     navController: NavController, viewModel: DoctorViewModel = viewModel()
@@ -330,10 +327,9 @@ fun DoctorList(
     val isLoading by viewModel.isLoading.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        // Search bar for filtering doctors
         TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             value = searchQuery,
             onValueChange = { searchQuery = it },
             placeholder = {
@@ -369,12 +365,10 @@ fun DoctorList(
             }
         }
 
-
+        // Display loading indicator or doctor list
         if (isLoading) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -407,7 +401,7 @@ private fun Content(
             modifier = Modifier.size(16.dp),
             painter = painterResource(id = icon),
             colorFilter = ColorFilter.tint(color = contentColor),
-            contentDescription = "Icon Date"
+            contentDescription = "Icon"
         )
 
         Spacer(modifier = Modifier.width(8.dp))

@@ -13,15 +13,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.haw.mobiledeviceprogramming.R
-import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
 import com.haw.mobiledeviceprogramming.ui.theme.TextColorTitle
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
-import com.haw.mobiledeviceprogramming.presentation.utils.Medicine
+import com.haw.mobiledeviceprogramming.utils.Medicine
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 
@@ -29,8 +26,7 @@ import androidx.compose.material3.IconButton
 fun MedicineCard(
     modifier: Modifier = Modifier,
     medicine: Medicine,
-    onDetailClick: (Medicine) -> Unit = {}, // Callback for detail action
-    onDeleteClick: (Medicine) -> Unit = {} // Callback for delete action
+    onDeleteClick: (Medicine) -> Unit = {}
 ) {
     Surface(
         modifier = modifier
@@ -46,7 +42,7 @@ fun MedicineCard(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween // Space between content and trash icon
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
                     Image(
@@ -75,13 +71,13 @@ fun MedicineCard(
 
                 // Trash can icon for deleting the medicine
                 IconButton(
-                    onClick = { onDeleteClick(medicine) }, // Trigger delete action
+                    onClick = { onDeleteClick(medicine) },
                     modifier = Modifier.align(Alignment.CenterVertically)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Delete, // Replace with desired icon
-                        contentDescription = "Delete", // Accessibility description
-                        tint = Color.Gray // Optional: Customize icon color
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Gray
                     )
                 }
             }
@@ -150,10 +146,10 @@ fun MedicineCard(
                     .fillMaxWidth()
                     .padding(top = 8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFEFEFEF), // Light gray for a subtle look
-                    contentColor = Color.Black // Black text for contrast
+                    containerColor = Color(0xFFEFEFEF),
+                    contentColor = Color.Black
                 ),
-                shape = RoundedCornerShape(8.dp) // Slightly rounded corners
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = "Remove Medicine",

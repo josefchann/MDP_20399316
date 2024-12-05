@@ -1,14 +1,14 @@
-package com.haw.mobiledeviceprogramming.presentation.crud
+package com.haw.mobiledeviceprogramming.viewmodel
 
 import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
-import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
+import com.haw.mobiledeviceprogramming.utils.Doctor
 
 // Appointment class
 data class Appointment(
-    val userUuid: String = "C2CcujZmsaZHK1qXmjQ4ARNFLuf1", // Default value to ensure no-argument constructor
-    val appointmentDate: String = "", // Default value
-    val doctor: Doctor = Doctor() // Default Doctor object for no-argument constructor
+    val userUuid: String = "",
+    val appointmentDate: String = "",
+    val doctor: Doctor = Doctor()
 ) {
     // No-argument constructor for Firestore deserialization
     constructor() : this("", "", Doctor())

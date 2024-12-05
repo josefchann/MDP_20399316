@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.haw.mobiledeviceprogramming.presentation.components.ProfileInfoCard
-import com.haw.mobiledeviceprogramming.presentation.utils.MedicalHistory
-import com.haw.mobiledeviceprogramming.presentation.viewmodel.ProfileViewModel
+import com.haw.mobiledeviceprogramming.utils.MedicalHistory
+import com.haw.mobiledeviceprogramming.viewmodel.ProfileViewModel
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.poppinsFontFamily
 import java.util.Calendar
@@ -73,7 +73,6 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 
         // Conditional rendering for profiles
         if (profiles.isEmpty()) {
-            // Show "No Medical History" text when the list is empty
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -94,13 +93,13 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(profiles) { profile ->
-                    val documentId = profile["id"] as? String // Safely cast to String or null
+                    val documentId = profile["id"] as? String
                     if (documentId != null) {
                         ProfileInfoCard(
                             condition = profile["condition"] as? String
-                                ?: "Unknown Condition", // Fallback for null values
+                                ?: "Unknown Condition",
                             date = profile["date"] as? String
-                                ?: "Unknown Date",                // Fallback for null values
+                                ?: "Unknown Date",
                             onDelete = {
                                 if (userUuid != null) {
                                     profileViewModel.deleteProfileInfo(documentId, userUuid)
@@ -139,7 +138,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                 if (userUuid != null) {
                     profileViewModel.addProfileInfo(medicalHistory, userUuid)
                 }
-                openDialog.value = false // Close the dialog after submission
+                openDialog.value = false
             }
         )
     }
@@ -165,7 +164,7 @@ private fun ProfileTitle(modifier: Modifier = Modifier) {
 @Composable
 fun AddProfileInfoDialog(
     onDismiss: () -> Unit,
-    onSubmit: (medicalHistory: MedicalHistory) -> Unit // Accept MedicalHistory instead of separate strings
+    onSubmit: (medicalHistory: MedicalHistory) -> Unit
 ) {
     var profileInfo by remember { mutableStateOf(TextFieldValue("")) }
     var selectedDate by remember { mutableStateOf("") }
@@ -232,7 +231,7 @@ fun AddProfileInfoDialog(
                         medicalCondition = profileInfo.text,
                         date = selectedDate
                     )
-                    onSubmit(medicalHistory) // Pass MedicalHistory object
+                    onSubmit(medicalHistory)
                 }
             }) {
                 Text("Add")
@@ -245,11 +244,3 @@ fun AddProfileInfoDialog(
         }
     )
 }
-
-
-//// Preview of the ProfileScreen
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//private fun ProfileScreenPreview() {
-//    ProfileScreen()
-//}

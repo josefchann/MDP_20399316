@@ -25,7 +25,7 @@ fun ProfileInfoCard(
     condition: String,
     date: String,
     modifier: Modifier = Modifier,
-    onDelete: () -> Unit // Callback for delete action
+    onDelete: () -> Unit
 ) {
     Surface(
         modifier = modifier
@@ -43,37 +43,30 @@ fun ProfileInfoCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.weight(1f) // Make the text column take up available space
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = condition,  // Use passed data
+                    text = condition,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     fontFamily = poppinsFontFamily
                 )
                 Text(
-                    text = date,  // Use passed data
+                    text = date,
                     fontSize = 14.sp,
                     color = BluePrimary,
                     fontFamily = poppinsFontFamily
                 )
             }
             IconButton(
-                onClick = onDelete // Trigger the delete callback
+                onClick = onDelete
             ) {
                 Icon(
-                    imageVector = Icons.Default.Delete, // Replace with desired icon
-                    contentDescription = "Delete", // Accessibility description
-                    tint = Color.Gray // Optional: Customize icon color
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.Gray
                 )
             }
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//private fun ProfileInfoCardPreview() {
-//    ProfileInfoCard()
-//}

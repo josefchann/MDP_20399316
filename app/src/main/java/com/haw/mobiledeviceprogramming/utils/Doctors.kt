@@ -1,4 +1,4 @@
-package com.haw.mobiledeviceprogramming.presentation.utils
+package com.haw.mobiledeviceprogramming.utils
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
@@ -8,14 +8,14 @@ import kotlinx.coroutines.tasks.await
 data class Doctor(
     val name: String = "",
     val specialty: String = "",
-    val imageRes: Int = R.drawable.ic_doctor, // Default image resource
+    val imageRes: Int = R.drawable.ic_doctor,
     val openingTime: String = "",
-    val id: Int = 0, // Default value for id
+    val id: Int = 0,
     val education: String = "",
-    val consultationFee: Int = 0, // Default value for consultationFee
-    val location: String = ""
+    val consultationFee: Int = 0,
+    val location: String = "",
+    val rating: String = ""
 ) {
-    // No-argument constructor to support Firestore deserialization
     constructor() : this(
         name = "",
         specialty = "",
@@ -24,7 +24,8 @@ data class Doctor(
         id = 0,
         education = "",
         consultationFee = 0,
-        location = ""
+        location = "",
+        rating = ""
     )
 }
 
@@ -43,11 +44,12 @@ object DoctorRepository {
                 val education = doc.getString("education") ?: return@mapNotNull null
                 val consultationFee = doc.getLong("consultationFee")?.toInt() ?: return@mapNotNull null
                 val location = doc.getString("location") ?: return@mapNotNull null
+                val rating = doc.getString("rating") ?: return@mapNotNull null
 
                 // Map image names to drawable resources
                 val imageRes = mapImageNameToResource(imageName)
 
-                Doctor(name, specialty, imageRes, openingTime, id, education, consultationFee, location)
+                Doctor(name, specialty, imageRes, openingTime, id, education, consultationFee, location, rating)
             }
         } catch (e: Exception) {
             Log.e("DoctorRepository", "Error fetching doctors: ${e.message}")
@@ -57,7 +59,7 @@ object DoctorRepository {
 
     fun mapImageNameToResource(imageName: String): Int {
         val resource = when (imageName) {
-            "img_ibnusina" -> R.drawable.img_ibnusina
+            "img_nisharoshini" -> R.drawable.img_nisharoshini
             "img_ameliatan" -> R.drawable.img_ameliatan
             "img_michaelzhang" -> R.drawable.img_michaelzhang
             "img_sarahlee" -> R.drawable.img_sarahlee

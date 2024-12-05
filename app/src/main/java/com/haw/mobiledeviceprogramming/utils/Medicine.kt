@@ -1,4 +1,4 @@
-package com.haw.mobiledeviceprogramming.presentation.utils
+package com.haw.mobiledeviceprogramming.utils
 
 import com.haw.mobiledeviceprogramming.R
 

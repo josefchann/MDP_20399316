@@ -17,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
-import com.haw.mobiledeviceprogramming.presentation.utils.Navigation
+import com.haw.mobiledeviceprogramming.utils.Navigation
 import com.haw.mobiledeviceprogramming.navigation.screen.BottomNavItemScreen
 import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
 import com.haw.mobiledeviceprogramming.ui.theme.PurpleGrey
@@ -92,9 +91,3 @@ fun MainScreen(modifier: Modifier = Modifier) {
         )
     }
 }
-
-//@Preview
-//@Composable
-//private fun MainScreenPreview() {
-//    MainScreen()
-//}

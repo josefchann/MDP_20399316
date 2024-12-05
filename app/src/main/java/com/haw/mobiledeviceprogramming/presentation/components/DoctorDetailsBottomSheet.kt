@@ -1,9 +1,7 @@
 package com.haw.mobiledeviceprogramming.presentation.components
 
 import DoctorViewModel
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,9 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,9 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
-import com.haw.mobiledeviceprogramming.ui.theme.BluePrimary
-import com.haw.mobiledeviceprogramming.ui.theme.DarkBlue
+import com.haw.mobiledeviceprogramming.utils.Doctor
 
 @Composable
 fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
@@ -39,8 +32,6 @@ fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
     val isLoading by viewModel.isLoading.collectAsState()
 
     // State to control the visibility of the dialog
-
-
     if (isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -80,13 +71,6 @@ fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
                 }
             }
 
-            // Check if the dialog should be displayed
-//            if (showDialog) {
-//                AppointmentDialog(doctor = doctor, onDismiss = {
-//                    showDialog = false
-//                    println("Dialog dismissed")
-//                })
-//            }
         } else {
             Text(
                 text = "Doctor with ID $id not found.",
@@ -106,6 +90,7 @@ fun DoctorDetailsScreen(id: Int?, viewModel: DoctorViewModel = viewModel()) {
     }
 }
 
+// Header section of the Bottom Sheet
 @Composable
 fun ProfileSection(doctor: Doctor) {
     Box(
@@ -113,24 +98,25 @@ fun ProfileSection(doctor: Doctor) {
             .fillMaxWidth()
             .height(120.dp)
             .border(
-                width = 1.dp, // Thickness of the border
-                color = Color(0xFF061A40), // Border color
-                shape = RoundedCornerShape(24.dp) // Shape of the border
+                width = 1.dp,
+                color = Color(0xFF061A40),
+                shape = RoundedCornerShape(24.dp)
             )
             .padding(16.dp),
-        contentAlignment = Alignment.Center // Center all content inside the Box
+        contentAlignment = Alignment.Center
     )
  {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center // Center the content horizontally
+            horizontalArrangement = Arrangement.Center
         ) {
             Image(
                 painter = painterResource(id = doctor.imageRes),
                 contentDescription = "Image of ${doctor.name}",
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
+                    .border(0.5.dp, Color.Gray, CircleShape),
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -151,6 +137,7 @@ fun ProfileSection(doctor: Doctor) {
     }
 }
 
+// Section to render Doctor Statistics
 @Composable
 fun DoctorStats(doctor: Doctor) {
     Column(
@@ -164,6 +151,7 @@ fun DoctorStats(doctor: Doctor) {
     }
 }
 
+// Section to render rows of statistics
 @Composable
 fun StatsRow(label: String, value: String) {
     Row(

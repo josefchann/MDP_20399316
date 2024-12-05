@@ -4,9 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.haw.mobiledeviceprogramming.R
-import com.haw.mobiledeviceprogramming.presentation.crud.Appointment
-import com.haw.mobiledeviceprogramming.presentation.utils.Doctor
-import com.haw.mobiledeviceprogramming.presentation.utils.DoctorRepository
+import com.haw.mobiledeviceprogramming.viewmodel.Appointment
+import com.haw.mobiledeviceprogramming.utils.Doctor
+import com.haw.mobiledeviceprogramming.utils.DoctorRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +29,7 @@ class DoctorViewModel : ViewModel() {
     val filteredDoctors: StateFlow<List<Doctor>> = _filteredDoctors.asStateFlow()
 
     fun fetchDoctors() {
-        if (_isLoading.value) return // Avoid duplicate fetches
+        if (_isLoading.value) return
         _isLoading.value = true
         viewModelScope.launch {
             try {
@@ -94,10 +94,10 @@ class DoctorViewModel : ViewModel() {
 
     fun deleteAppointment(appointmentId: Int, onSuccess: () -> Unit = {}, onError: (Exception) -> Unit = {}) {
         firestore.collection("appointments")
-            .whereEqualTo("doctor.id", appointmentId) // Use the correct field path for the nested ID
+            .whereEqualTo("doctor.id", appointmentId)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val updatedAppointments = _appointments.value.toMutableList() // Create a mutable copy of the current list
+                val updatedAppointments = _appointments.value.toMutableList()
 
                 for (document in querySnapshot.documents) {
                     // Remove the document reference
@@ -109,7 +109,7 @@ class DoctorViewModel : ViewModel() {
                             }
                             if (appointmentToRemove != null) {
                                 updatedAppointments.remove(appointmentToRemove)
-                                _appointments.value = updatedAppointments // Update the state flow
+                                _appointments.value = updatedAppointments
                             }
                             Log.d("DoctorViewModel", "Successfully deleted appointment with id: $appointmentId")
                             onSuccess()

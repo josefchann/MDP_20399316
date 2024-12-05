@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.haw.mobiledeviceprogramming.presentation.components.SplashScreen
 import com.haw.mobiledeviceprogramming.presentation.screen.MainScreen
-import com.haw.mobiledeviceprogramming.presentation.viewmodel.UserViewModel
+import com.haw.mobiledeviceprogramming.viewmodel.UserViewModel
 import com.haw.mobiledeviceprogramming.ui.theme.MobileDeviceProgrammingTheme
 
 class MainActivity : ComponentActivity() {
