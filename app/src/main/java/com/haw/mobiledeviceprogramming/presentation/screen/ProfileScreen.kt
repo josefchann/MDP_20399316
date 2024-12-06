@@ -49,29 +49,20 @@ import java.util.Calendar
 
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier) {
-    // Get the ViewModel
     val profileViewModel: ProfileViewModel = viewModel()
-
-    // Observe profiles LiveData
     val profiles by profileViewModel.profiles.observeAsState(emptyList())
-
-    // State to manage the visibility of the Add New Profile dialog
     val openDialog = remember { mutableStateOf(false) }
-
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var profileToDelete by remember { mutableStateOf<String?>(null) }
     val userUuid = FirebaseAuth.getInstance().currentUser?.uid
 
-    // Fetch profiles when the screen is loaded
     LaunchedEffect(Unit) {
-        if (userUuid != null) {
-            profileViewModel.fetchProfiles(userUuid)
-        }
+        userUuid?.let { profileViewModel.fetchProfiles(it) }
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Title Section
         ProfileTitle()
 
-        // Conditional rendering for profiles
         if (profiles.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -87,35 +78,25 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                 )
             }
         } else {
-            // Profile Information Section
             LazyColumn(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(profiles) { profile ->
                     val documentId = profile["id"] as? String
-                    if (documentId != null) {
-                        ProfileInfoCard(
-                            condition = profile["condition"] as? String
-                                ?: "Unknown Condition",
-                            date = profile["date"] as? String
-                                ?: "Unknown Date",
-                            onDelete = {
-                                if (userUuid != null) {
-                                    profileViewModel.deleteProfileInfo(documentId, userUuid)
-                                }
-                            },
-                        )
-                    } else {
-                        // Log or handle the missing `id` case
-                        Log.e("ProfileScreen", "Document ID is missing or null")
-                    }
+                    ProfileInfoCard(
+                        condition = profile["condition"] as? String ?: "Unknown Condition",
+                        date = profile["date"] as? String ?: "Unknown Date",
+                        onDelete = {
+                            profileToDelete = documentId
+                            showDeleteDialog = true
+                        }
+                    )
                 }
             }
         }
     }
 
-    // Floating Action Button for adding new profile info
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -130,19 +111,52 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    // Dialog for adding new profile information
     if (openDialog.value) {
         AddProfileInfoDialog(
             onDismiss = { openDialog.value = false },
             onSubmit = { medicalHistory ->
-                if (userUuid != null) {
-                    profileViewModel.addProfileInfo(medicalHistory, userUuid)
-                }
+                userUuid?.let { profileViewModel.addProfileInfo(medicalHistory, it) }
                 openDialog.value = false
             }
         )
     }
+
+    if (showDeleteDialog && profileToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Medical History", fontFamily = poppinsFontFamily, fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    text = "Are you sure you want to delete this medical history?",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        userUuid?.let {
+                            profileToDelete?.let { id ->
+                                profileViewModel.deleteProfileInfo(id, it)
+                                profileToDelete = null
+                                showDeleteDialog = false
+                            }
+                        }
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
+
 
 
 

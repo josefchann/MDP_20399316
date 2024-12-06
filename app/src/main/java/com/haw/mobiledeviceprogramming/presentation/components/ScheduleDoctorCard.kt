@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -19,6 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -43,6 +48,8 @@ fun ScheduleDoctorCard(
     onDetailClick: (Doctor) -> Unit = {},
     onDeleteClick: (Int) -> Unit = {}
 ) {
+    var showCancelDialog by remember { mutableStateOf(false) }
+
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -86,7 +93,6 @@ fun ScheduleDoctorCard(
                         )
                     }
                 }
-
             }
 
             Divider(
@@ -117,7 +123,7 @@ fun ScheduleDoctorCard(
 
             // Delete Button
             Button(
-                onClick = { onDeleteClick(appointment.doctor.id) },
+                onClick = { showCancelDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -135,6 +141,45 @@ fun ScheduleDoctorCard(
                 )
             }
         }
+    }
+
+    // Cancel Appointment Confirmation Dialog
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = {
+                Text(
+                    text = "Cancel Appointment",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to cancel this appointment?",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showCancelDialog = false
+                        onDeleteClick(appointment.doctor.id)
+                    }
+                ) {
+                    Text("Yes, Cancel")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showCancelDialog = false }
+                ) {
+                    Text("Dismiss")
+                }
+            }
+        )
     }
 }
 

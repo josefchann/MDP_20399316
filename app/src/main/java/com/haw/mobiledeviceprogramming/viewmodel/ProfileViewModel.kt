@@ -107,7 +107,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                         viewModelScope.launch(Dispatchers.Main) {
                             Toast.makeText(
                                 getApplication(),
-                                "Item deleted successfully",
+                                "Medical History deleted successfully",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
