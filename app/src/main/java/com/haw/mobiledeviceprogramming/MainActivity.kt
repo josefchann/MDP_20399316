@@ -20,28 +20,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MobileDeviceProgrammingTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    val navController = rememberNavController()
-                    val userViewModel: UserViewModel = viewModel()
 
-                    NavHost(navController = navController, startDestination = "splash") {
-                        composable("splash") {
-                            SplashScreen {
-                                navController.navigate("login") {
-                                    popUpTo("splash") { inclusive = true }
-                                }
+            Surface(color = MaterialTheme.colorScheme.background) {
+                val navController = rememberNavController()
+                val userViewModel: UserViewModel = viewModel()
+
+                NavHost(navController = navController, startDestination = "splash") {
+                    composable("splash") {
+                        SplashScreen {
+                            navController.navigate("login") {
+                                popUpTo("splash") { inclusive = true }
                             }
                         }
-                        composable("login") {
-                            LoginScreen(navController = navController, userViewModel = userViewModel)
-                        }
-                        composable("main") {
-                            MainScreen()
-                        }
+                    }
+                    composable("login") {
+                        LoginScreen(navController = navController, userViewModel = userViewModel)
+                    }
+                    composable("main") {
+                        MainScreen(userViewModel = userViewModel)
                     }
                 }
             }
+
         }
     }
 

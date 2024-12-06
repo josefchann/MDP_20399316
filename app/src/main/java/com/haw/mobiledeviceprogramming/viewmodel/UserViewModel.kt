@@ -3,6 +3,8 @@ package com.haw.mobiledeviceprogramming.viewmodel
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 data class User(
     val name: String = "User",
@@ -13,15 +15,22 @@ class UserViewModel : ViewModel() {
     var user by mutableStateOf(User())
         private set
 
+    var isSignedIn by mutableStateOf(false)
+        private set
+
     fun setUser(name: String, profilePictureUrl: String) {
         Log.d("UserViewModel", "Setting user - Name: $name, Profile Picture URL: $profilePictureUrl")
         user = User(name, profilePictureUrl)
-        Log.d("UserViewModel", "Updated user: $user")
+        isSignedIn = true
+        Log.d("UserViewModel", "isSignedIn updated to: $isSignedIn")
     }
 
     fun signOut() {
-        Log.d("UserViewModel", "Signing out user: ${user.name}")
-        user = User() // Reset to default User values
-        Log.d("UserViewModel", "User signed out. Current user: $user")
+        Firebase.auth.signOut()
+
+        user = User()
+        isSignedIn = false
     }
+
 }
+

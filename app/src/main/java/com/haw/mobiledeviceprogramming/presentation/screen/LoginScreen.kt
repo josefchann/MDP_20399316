@@ -62,14 +62,14 @@ fun LoginScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background // Background color
+        color = MaterialTheme.colorScheme.background
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
             // Firebase Logo with slide-up animation
             Image(
-                painter = painterResource(id = R.drawable.img_logo), // Replace with Firebase logo
+                painter = painterResource(id = R.drawable.img_logo),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .offset(y = logoOffsetY.value.dp)
